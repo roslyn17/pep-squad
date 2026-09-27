@@ -6,11 +6,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PrimaryButton, SecondaryButton } from '@/components/Buttons';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
-import { IntensitySelector } from '@/components/IntensitySelector';
 import { SpeechBubble } from '@/components/SpeechBubble';
 import { SwapSheet } from '@/components/SwapSheet';
 import { Character, getCharacter } from '@/data/characters';
-import { Intensity, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
+import { PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
 import { colors, fonts, radius, spacing } from '@/theme';
@@ -45,7 +44,6 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   const insets = useSafeAreaInsets();
   const { squad } = useSquad();
   const [task, setTask] = useState('');
-  const [intensity, setIntensity] = useState<Intensity>('fired-up');
   // The latest pep talk, or the character's "couldn't do it" line if the request failed.
   const [result, setResult] = useState<PepTalkResult | null>(null);
   // Changes with every new result, so the play button knows which line it's playing.
@@ -69,7 +67,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
     speech.stop();
     setLoading(true);
     try {
-      const next = await requestPepTalk(forCharacter, trimmedTask, intensity);
+      const next = await requestPepTalk(forCharacter, trimmedTask);
       if (requestId === latestRequest.current) {
         setResult(next);
         setResultId(`pep-talk-${requestId}`);
@@ -137,8 +135,6 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
             accessibilityLabelledBy="taskLabel"
           />
 
-          <Text style={styles.label}>Intensity</Text>
-          <IntensitySelector value={intensity} onChange={setIntensity} />
 
           {showBubble && (
             <View style={styles.bubble}>
@@ -181,7 +177,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
               speech.stop();
               router.push({
                 pathname: '/victory',
-                params: { characterId: character.id, task: trimmedTask, intensity },
+                params: { characterId: character.id, task: trimmedTask },
               });
             }}
           />

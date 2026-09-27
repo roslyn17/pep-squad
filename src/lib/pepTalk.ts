@@ -2,14 +2,6 @@ import { API_BASE_URL } from '@/config';
 import { Character } from '@/data/characters';
 import { getDeviceId } from '@/lib/storage';
 
-export type Intensity = 'gentle' | 'fired-up' | 'full-chaos';
-
-export const INTENSITIES: { id: Intensity; label: string }[] = [
-  { id: 'gentle', label: 'Gentle' },
-  { id: 'fired-up', label: 'Fired up' },
-  { id: 'full-chaos', label: 'Full chaos' },
-];
-
 /** "pep-talk" is before the task; "reaction" is after the user taps "I did it!". */
 export type PepTalkKind = 'pep-talk' | 'reaction';
 
@@ -33,7 +25,6 @@ function pick(lines: string[]): string {
 export async function requestPepTalk(
   character: Character,
   task: string,
-  intensity: Intensity,
   kind: PepTalkKind = 'pep-talk',
 ): Promise<PepTalkResult> {
   // Give up on a slow request rather than leaving the character "thinking" forever.
@@ -47,7 +38,6 @@ export async function requestPepTalk(
         kind,
         characterId: character.id,
         task,
-        intensity,
         deviceId: await getDeviceId(),
       }),
       signal: controller.signal,

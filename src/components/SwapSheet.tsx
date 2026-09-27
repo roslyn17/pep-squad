@@ -14,7 +14,7 @@ type Props = {
   onClose: () => void;
 };
 
-/** Bottom sheet for "Swap": pick a different squad member for the same task and intensity. */
+/** Bottom sheet for "Swap": pick a different squad member for the same task. */
 export function SwapSheet({ visible, options, onPick, onClose }: Props) {
   const insets = useSafeAreaInsets();
   return (

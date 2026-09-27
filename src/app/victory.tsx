@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import { PlayButton } from '@/components/PlayButton';
 import { getCharacter } from '@/data/characters';
-import { Intensity, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
+import { PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { estimateDurationSeconds, speak, useSpeech } from '@/lib/speak';
 import { colors, fonts, minTouchSize, radius, spacing } from '@/theme';
 
@@ -26,10 +26,9 @@ function backToPepTalk() {
 }
 
 export default function VictoryScreen() {
-  const params = useLocalSearchParams<{ characterId: string; task: string; intensity: Intensity }>();
+  const params = useLocalSearchParams<{ characterId: string; task: string }>();
   const character = getCharacter(params.characterId ?? '');
   const task = params.task ?? '';
-  const intensity = params.intensity ?? 'fired-up';
   const insets = useSafeAreaInsets();
   const speech = useSpeech();
 
@@ -40,13 +39,13 @@ export default function VictoryScreen() {
   const fetchReaction = useCallback(async () => {
     if (!character || !task) return;
     setLoading(true);
-    const next = await requestPepTalk(character, task, intensity, 'reaction');
+    const next = await requestPepTalk(character, task, 'reaction');
     if (!mounted.current) return;
     setResult(next);
     setLoading(false);
     // The reaction plays on its own (silent when the phone is on silent).
     if (next.status === 'ok') speak(REACTION_ID, next.text, character);
-  }, [character, task, intensity]);
+  }, [character, task]);
 
   useEffect(() => {
     mounted.current = true;

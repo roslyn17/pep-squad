@@ -19,12 +19,12 @@ The tone is playful. The characters should be funny first and motivating second.
 ## Screens
 
 1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
-2. **Pep talk:** character header (icon, with the name and the tagline stacked beside it), text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
-   - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task and intensity.
+2. **Pep talk:** character header (icon, with the name and the tagline stacked beside it), text input ("What do you need a push for?"), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
+   - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
-   - Intensity defaults to Fired up. Tasks are capped at 120 characters.
+   - Tasks are capped at 120 characters.
 3. **I did it!:** a full-screen dark page (`src/app/victory.tsx`) with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), current streak and progress toward the next unlock (added in step 8), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
-4. **Saved:** saved pep talks as cards (character, task, intensity, snippet, play button), with filter chips by character.
+4. **Saved:** saved pep talks as cards (character, task, snippet, play button), with filter chips by character.
 
 Wins and streaks are still recorded in v1 because the "I did it!" screen shows the streak and unlock progress, and unlocks happen every 10 wins. A streak is the number of consecutive days with at least one win, using the phone's local time.
 
@@ -63,7 +63,7 @@ All character data lives in ONE file (`src/data/characters.ts`) so adding or twe
 
 ## AI prompting
 
-- Each request sends: the character's personality prompt, the user's task, and the intensity tier.
+- Each request sends: which character, the user's task, and whether it's a pep talk or a reaction. The backend looks up the character's personality prompt; each character speaks at their own natural energy level.
 - Two kinds of responses: a pep talk (before the task) and a reaction (after "I did it!").
 - Keep responses short (2 to 4 sentences) so they're fun to hear aloud.
 - Characters stay kind underneath the comedy: never genuinely insulting or mean about the user.
@@ -129,7 +129,6 @@ Not in v1, but planned or worth considering:
 ## Decisions
 
 - Mobile app with Expo rather than a web app.
-- Intensity uses 3 tiers, not a slider.
 - "Swap" button label kept for now; may rename later if it confuses people.
 - 20 AI requests per day limit to keep costs under about $1/month.
 - Bank of 20 characters, each tagged gentle, loud, chaotic, or deadpan. Each user starts with 5 random characters, including at least one of each tone.
@@ -165,3 +164,4 @@ Not in v1, but planned or worth considering:
 - Each character has a ranked list of preferred built-in iPhone voices (accents like British Daniel or Irish Moira, novelty voices like Zarvox for Unit 7, and a French voice for Chef Antoine). The app uses the first one the phone has, preferring an Enhanced/Premium download of it, and falls back to the default voice. Which voices exist varies by iPhone and by what the user has downloaded in Settings > Accessibility > Spoken Content > Voices.
 - The pep talk screen keeps its big button above the on-screen keyboard, and the keyboard's "done" key asks for the first pep talk, so you don't have to dismiss the keyboard first.
 - Simulator testing quirk: the Simulator's automated typing is slow, so taps sent right after typing can land late. This isn't an app bug.
+- No intensity setting: the Gentle / Fired up / Full chaos selector was removed from the app, backend, and mockup. Each character's personality sets their energy.
