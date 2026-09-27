@@ -80,8 +80,15 @@ export async function speak(id: string, text: string, character: Character) {
   setCurrent(id);
   const voice = await voiceFor(character);
   if (currentId !== id) return; // stopped or replaced while the voice list was loading
+  // iOS can report "done" early when one line is cut off and another starts right away, so
+  // double-check that speech really ended before switching the button back to play.
   const finished = () => {
-    if (currentId === id) setCurrent(null);
+    const check = async () => {
+      if (currentId !== id) return;
+      if (await Speech.isSpeakingAsync().catch(() => false)) setTimeout(check, 400);
+      else if (currentId === id) setCurrent(null);
+    };
+    check();
   };
   Speech.speak(forSpeech(text), {
     pitch: character.voice.pitch,

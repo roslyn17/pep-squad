@@ -8,11 +8,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import { PlayButton } from '@/components/PlayButton';
 import { getCharacter } from '@/data/characters';
-import { PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
+import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { estimateDurationSeconds, speak, useSpeech } from '@/lib/speak';
 import { colors, fonts, minTouchSize, radius, spacing } from '@/theme';
 
-const REACTION_ID = 'victory-reaction';
+const REACTION_ID = 'outcome-reaction';
 
 // Closes this screen and the pep talk underneath it, landing on the Squad tab.
 function backToSquad() {
@@ -25,8 +25,10 @@ function backToPepTalk() {
   else backToSquad();
 }
 
-export default function VictoryScreen() {
-  const params = useLocalSearchParams<{ characterId: string; task: string }>();
+// Shown after "I did it!" (a celebration) or "I didn't do it" (a kind, no-guilt reaction).
+export default function ReactionScreen() {
+  const params = useLocalSearchParams<{ characterId: string; task: string; outcome: Outcome }>();
+  const outcome: Outcome = params.outcome === 'not-done' ? 'not-done' : 'done';
   const character = getCharacter(params.characterId ?? '');
   const task = params.task ?? '';
   const insets = useSafeAreaInsets();
@@ -39,13 +41,13 @@ export default function VictoryScreen() {
   const fetchReaction = useCallback(async () => {
     if (!character || !task) return;
     setLoading(true);
-    const next = await requestPepTalk(character, task, 'reaction');
+    const next = await requestPepTalk(character, task, outcome === 'done' ? 'reaction' : 'not-done');
     if (!mounted.current) return;
     setResult(next);
     setLoading(false);
     // The reaction plays on its own (silent when the phone is on silent).
     if (next.status === 'ok') speak(REACTION_ID, next.text, character);
-  }, [character, task]);
+  }, [character, task, outcome]);
 
   useEffect(() => {
     mounted.current = true;
@@ -82,7 +84,7 @@ export default function VictoryScreen() {
           <Ionicons name="close" size={26} color={colors.textOnDark} />
         </Pressable>
 
-        <Text style={styles.eyebrow}>Mission complete</Text>
+        <Text style={styles.eyebrow}>{outcome === 'done' ? 'Mission complete' : 'Not this time'}</Text>
         <Text style={styles.task} accessibilityRole="header">
           {task}
         </Text>
@@ -122,16 +124,31 @@ export default function VictoryScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        <Pressable
-          onPress={backToSquad}
-          style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
-          accessibilityRole="button"
-        >
-          <Text style={styles.primaryText}>Back to the squad</Text>
-        </Pressable>
-        <OutlineButton label="See my pep talk again" onPress={backToPepTalk} />
+        {outcome === 'done' ? (
+          <>
+            <GoldButton label="Back to the squad" onPress={backToSquad} />
+            <OutlineButton label="See my pep talk again" onPress={backToPepTalk} />
+          </>
+        ) : (
+          <>
+            <GoldButton label="Try again" onPress={backToPepTalk} />
+            <OutlineButton label="Back to the squad" onPress={backToSquad} />
+          </>
+        )}
       </View>
     </View>
+  );
+}
+
+function GoldButton({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
+      accessibilityRole="button"
+    >
+      <Text style={styles.primaryText}>{label}</Text>
+    </Pressable>
   );
 }
 

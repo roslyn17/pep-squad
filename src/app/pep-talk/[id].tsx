@@ -4,12 +4,12 @@ import { useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { PrimaryButton, SecondaryButton } from '@/components/Buttons';
+import { OutlineBigButton, PrimaryButton, SecondaryButton } from '@/components/Buttons';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import { SpeechBubble } from '@/components/SpeechBubble';
 import { SwapSheet } from '@/components/SwapSheet';
 import { Character, getCharacter } from '@/data/characters';
-import { PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
+import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { removeSavedPepTalk, savePepTalk, useSavedPepTalks } from '@/lib/saved';
 import { useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
@@ -86,6 +86,14 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
     } finally {
       if (requestId === latestRequest.current) setLoading(false);
     }
+  }
+
+  function reportOutcome(outcome: Outcome) {
+    speech.stop();
+    router.push({
+      pathname: '/reaction',
+      params: { characterId: character.id, task: resultTask, outcome },
+    });
   }
 
   async function toggleSave() {
@@ -190,17 +198,18 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         {hasPepTalk ? (
-          <PrimaryButton
-            label="I did it!"
-            disabled={loading}
-            onPress={() => {
-              speech.stop();
-              router.push({
-                pathname: '/victory',
-                params: { characterId: character.id, task: resultTask },
-              });
-            }}
-          />
+          <View style={styles.outcomeRow}>
+            <View style={styles.outcomeButton}>
+              <PrimaryButton label="I did it!" disabled={loading} onPress={() => reportOutcome('done')} />
+            </View>
+            <View style={styles.outcomeButton}>
+              <OutlineBigButton
+                label="I didn't do it"
+                disabled={loading}
+                onPress={() => reportOutcome('not-done')}
+              />
+            </View>
+          </View>
         ) : (
           <PrimaryButton
             label={result ? 'Try again' : 'Pep me up!'}
@@ -295,6 +304,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 14,
+  },
+  outcomeRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  outcomeButton: {
+    flex: 1,
   },
   statusBarCover: {
     position: 'absolute',

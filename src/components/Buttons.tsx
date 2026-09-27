@@ -29,6 +29,23 @@ export function PrimaryButton({ label, onPress, disabled, loading }: Props) {
   );
 }
 
+/** Same size as PrimaryButton but outlined, for a secondary big choice, e.g. "I didn't do it". */
+export function OutlineBigButton({ label, onPress, disabled }: Props) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      style={({ pressed }) => [styles.outlineBig, disabled && styles.disabled, pressed && styles.pressed]}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+    >
+      <Text style={styles.outlineBigLabel} numberOfLines={1} adjustsFontSizeToFit>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 /** White outlined button, e.g. "Again", "Save", "Swap". */
 export function SecondaryButton({ label, onPress, disabled }: Props) {
   return (
@@ -51,6 +68,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  outlineBig: {
+    minHeight: 64,
+    borderRadius: radius.card,
+    borderWidth: 2,
+    borderColor: colors.accent,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  outlineBigLabel: {
+    fontFamily: fonts.heading,
+    fontSize: 20,
+    color: colors.accent,
   },
   primaryLabel: {
     fontFamily: fonts.heading,

@@ -16,7 +16,16 @@ const PER_DEVICE_DAILY_LIMIT = 20;
 // environment variables without redeploying code.
 const GLOBAL_DAILY_LIMIT = Number(process.env.GLOBAL_DAILY_LIMIT ?? 100);
 
-type Kind = 'pep-talk' | 'reaction';
+// pep-talk: before the task. reaction: after "I did it!". not-done: after "I didn't do it".
+type Kind = 'pep-talk' | 'reaction' | 'not-done';
+
+const JOBS: Record<Kind, string> = {
+  'pep-talk': 'Your job right now: give the user a pep talk to get them to start and finish their task.',
+  reaction:
+    'Your job right now: the user just told you they FINISHED their task. React to their success in character and celebrate them.',
+  'not-done':
+    "Your job right now: the user just told you they did NOT get their task done. React in character, but be genuinely kind: no guilt, no shaming, no disappointment aimed at them. Make it feel normal and okay, and encourage them to try again later, maybe with one tiny first step. Even sarcastic, deadpan, or disappointed characters drop the sarcasm here and let their warmth show; any teasing is about the task, never about the user.",
+};
 const BASE_RULES = `You write lines for Pep Squad, a playful motivation app. You are playing one character from "the squad."
 - Stay fully in character. Be funny first and motivating second.
 - Keep it SHORT: 2 to 4 sentences and no more than 60 words in total. Brevity is part of the joke. It will be read aloud by text-to-speech, so write plain spoken words only: no emoji, no stage directions, no asterisks, no markdown, no lists, no quotation marks around the whole thing.
@@ -25,11 +34,7 @@ const BASE_RULES = `You write lines for Pep Squad, a playful motivation app. You
 - If the task sounds harmful or unsafe, stay in character and gently encourage the user to take care of themselves instead.`;
 
 function systemPrompt(character: Character, kind: Kind): string {
-  const job =
-    kind === 'pep-talk'
-      ? 'Your job right now: give the user a pep talk to get them to start and finish their task.'
-      : 'Your job right now: the user just told you they FINISHED their task. React to their success in character and celebrate them.';
-  return `${BASE_RULES}\n\n${character.personality}\n\n${job}`;
+  return `${BASE_RULES}\n\n${character.personality}\n\n${JOBS[kind]}`;
 }
 
 function json(body: unknown, status = 200): Response {
@@ -54,7 +59,7 @@ function parseRequest(body: unknown): ValidRequest | null {
   const deviceId = b.deviceId;
   const character = typeof b.characterId === 'string' ? getCharacter(b.characterId) : undefined;
 
-  if (kind !== 'pep-talk' && kind !== 'reaction') return null;
+  if (kind !== 'pep-talk' && kind !== 'reaction' && kind !== 'not-done') return null;
   if (!character) return null;
   if (task.length === 0 || task.length > MAX_TASK_LENGTH) return null;
   if (typeof deviceId !== 'string' || !/^[A-Za-z0-9-]{8,64}$/.test(deviceId)) return null;
@@ -104,6 +109,7 @@ export async function POST(request: Request): Promise<Response> {
     const text = response.content
       .flatMap((block) => (block.type === 'text' ? [block.text] : []))
       .join('')
+      .replace(/\*/g, '') // asterisks would be read aloud or look like formatting
       .trim();
     if (!text) return json({ error: 'failed' }, 502);
 

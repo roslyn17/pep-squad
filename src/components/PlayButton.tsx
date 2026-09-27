@@ -9,7 +9,7 @@ type Props = {
   /** True while this line is being read aloud: the button becomes a stop button. */
   playing?: boolean;
   onPress?: () => void;
-  /** "light" = orange pill on light screens; "dark" = gold pill on the dark victory screen. */
+  /** "light" = orange pill on light screens; "dark" = gold pill on the dark reaction screen. */
   variant?: 'light' | 'dark';
 };
 

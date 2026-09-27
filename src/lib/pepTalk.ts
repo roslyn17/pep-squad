@@ -2,8 +2,11 @@ import { API_BASE_URL } from '@/config';
 import { Character } from '@/data/characters';
 import { getDeviceId } from '@/lib/storage';
 
-/** "pep-talk" is before the task; "reaction" is after the user taps "I did it!". */
-export type PepTalkKind = 'pep-talk' | 'reaction';
+/** "pep-talk" is before the task; "reaction" follows "I did it!"; "not-done" follows "I didn't do it". */
+export type PepTalkKind = 'pep-talk' | 'reaction' | 'not-done';
+
+/** What the user reported after a pep talk: "I did it!" or "I didn't do it". */
+export type Outcome = 'done' | 'not-done';
 
 export type PepTalkResult =
   | { status: 'ok'; text: string }

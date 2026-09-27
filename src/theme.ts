@@ -9,7 +9,7 @@ export const colors = {
   accent: '#C2410C', // tomato orange: primary buttons, active tab
   onAccent: '#FFFFFF', // text and icons on orange
   gold: '#F4C56A', // accents on dark surfaces
-  dark: '#1F1B16', // victory screen, featured card
+  dark: '#1F1B16', // reaction screen, featured card
   darkRaised: '#34302A', // cards and buttons on dark screens
   textOnDark: '#FBF6EE',
   textOnDarkSecondary: '#CFC6BA',
