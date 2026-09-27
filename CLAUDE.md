@@ -64,7 +64,7 @@ All character data lives in ONE file (`data/characters.ts`) so adding or tweakin
 - Keep responses short (2 to 4 sentences) so they're fun to hear aloud.
 - Characters stay kind underneath the comedy: never genuinely insulting or mean about the user.
 - Use Claude Haiku 4.5 and cap response length with `max_tokens`.
-- The backend enforces a limit of 20 AI requests per day (pep talks and reactions combined). When the limit is hit, show a friendly in-character message instead of an error.
+- The backend enforces a limit of 20 AI requests per day per device (pep talks and reactions combined), using an anonymous ID the app generates on first launch. Because that ID can be reset by reinstalling, the backend also enforces a global daily cap on total AI requests across all users; this is the real cost protection. The exact cap is set in step 4. When the limit is hit, show a friendly in-character message instead of an error.
 - When an AI call fails (no internet, server error), tell the user it failed using a pre-written, in-character line. Each character has its own failure lines in `data/characters.ts`. Never show a fake pep talk as if the AI wrote it.
 - Replaying a saved pep talk never makes a new AI call.
 
@@ -107,6 +107,15 @@ This file is the source of truth for the project. Update it whenever something c
 - Add a short "Decisions" entry below for anything that isn't obvious from the rest of the file.
 - Propose CLAUDE.md edits at the end of a work session, and make them once the user agrees.
 
+## Future features
+
+Not in v1, but planned or worth considering:
+
+- **User accounts:** sign-in so a user's squad, wins, and saved pep talks sync across devices and survive reinstalling. This would allow true per-person AI limits. When added, upload the data already on the phone at sign-up so nobody loses progress. Until then, keep all stored data in one clearly organized place (e.g. a single `lib/storage.ts` module) so it's easy to sync later. Apple requires in-app account deletion, and Sign in with Apple if any other social sign-in is offered.
+- **Sharing:** "Share this moment" from the victory screen (removed from v1).
+- **Settings screen:** the gear shown in the mockup.
+- **AI voices:** replace `expo-speech` with an AI voice service.
+
 ## Decisions
 
 - Mobile app with Expo rather than a web app.
@@ -125,3 +134,4 @@ This file is the source of truth for the project. Update it whenever something c
 - The character's face doesn't change on the victory screen.
 - Backend is a Vercel function in `api/` in this repo.
 - Test device: iPhone with Expo Go.
+- No user accounts in v1: all data stays on the phone (AsyncStorage). This is simpler and faster to build, has no sign-up friction, and keeps data private. The trade-off is that data doesn't survive deleting the app or move to other devices, and per-device AI limits can be dodged, hence the global daily cap. Accounts are listed under Future features.
