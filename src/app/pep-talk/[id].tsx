@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PrimaryButton, SecondaryButton } from '@/components/Buttons';
@@ -88,7 +88,8 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   const swapOptions = (squad ?? []).filter((c) => c.id !== character.id);
 
   return (
-    <View style={styles.screen}>
+    // Lifts the big button above the on-screen keyboard so it can be tapped right after typing.
+    <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         ref={scrollRef}
         // Bring the pep talk and its buttons into view when it appears.
@@ -97,7 +98,6 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
         scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
-        automaticallyAdjustKeyboardInsets
       >
         <View style={[styles.header, { backgroundColor: character.cardColor, paddingTop: insets.top + 8 }]}>
           <Pressable
@@ -132,6 +132,8 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
             maxLength={MAX_TASK_LENGTH}
             returnKeyType="done"
             submitBehavior="blurAndSubmit"
+            // The keyboard's "done" key asks for the first pep talk.
+            onSubmitEditing={() => !result && !loading && generate(character)}
             accessibilityLabelledBy="taskLabel"
           />
 
@@ -172,8 +174,17 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         {hasPepTalk ? (
-          // The "I did it!" screen arrives in step 6.
-          <PrimaryButton label="I did it!" disabled={loading} />
+          <PrimaryButton
+            label="I did it!"
+            disabled={loading}
+            onPress={() => {
+              speech.stop();
+              router.push({
+                pathname: '/victory',
+                params: { characterId: character.id, task: trimmedTask, intensity },
+              });
+            }}
+          />
         ) : (
           <PrimaryButton
             label={result ? 'Try again' : 'Pep me up!'}
@@ -190,7 +201,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
         onPick={handleSwap}
         onClose={() => setSwapOpen(false)}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -7,15 +7,21 @@ import { colors } from '@/theme';
 type Props = {
   character: Character;
   size?: number;
+  /** Circle color. Defaults to a soft white that works on the pastel cards. */
+  backgroundColor?: string;
 };
 
 // Placeholder avatar: the character's icon in a soft circle. Swap this for drawn faces later;
 // every screen uses this component, so that's the only place that will need to change.
 // (Icons rather than emoji because emoji don't render in the iOS Simulator we test in.)
-export function CharacterAvatar({ character, size = 56 }: Props) {
+export function CharacterAvatar({ character, size = 56, backgroundColor }: Props) {
   return (
     <View
-      style={[styles.circle, { width: size, height: size, borderRadius: size / 2 }]}
+      style={[
+        styles.circle,
+        { width: size, height: size, borderRadius: size / 2 },
+        backgroundColor ? { backgroundColor } : null,
+      ]}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >

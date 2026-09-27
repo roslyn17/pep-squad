@@ -23,7 +23,7 @@ The tone is playful. The characters should be funny first and motivating second.
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task and intensity.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
    - Intensity defaults to Fired up. Tasks are capped at 120 characters.
-3. **I did it!:** the character's reaction (with play button, auto-plays), current streak, progress toward the next unlock, and "Back to the squad." The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
+3. **I did it!:** a full-screen dark page (`src/app/victory.tsx`) with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), current streak and progress toward the next unlock (added in step 8), and "Back to the squad". The close X and "Back to the squad" both return to the Squad tab. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, intensity, snippet, play button), with filter chips by character.
 
 Wins and streaks are still recorded in v1 because the "I did it!" screen shows the streak and unlock progress, and unlocks happen every 10 wins. A streak is the number of consecutive days with at least one win, using the phone's local time.
@@ -91,7 +91,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 3. ✅ Pep talk screen UI with a hard-coded sample response.
 4. ✅ Serverless backend function and real AI pep talks.
 5. ✅ Voice playback with `expo-speech`.
-6. "I did it!" screen with the AI reaction (auto-play voice).
+6. ✅ "I did it!" screen with the AI reaction (auto-play voice).
 7. Saving pep talks and the Saved tab.
 8. Recording wins and streaks (shown on the "I did it!" screen).
 9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3), haptics, notifications.
@@ -163,3 +163,5 @@ Not in v1, but planned or worth considering:
 - All-caps lines (Sergeant Stone) are spoken in normal case, because text-to-speech reads some capitalized words as letters ("IT" as "I T"). The screen still shows them in caps.
 - Voices respect the iPhone's silent switch: when the phone is on silent, nothing plays (including auto-played reactions). This is intentional; don't add a "play in silent mode" override.
 - Each character has a ranked list of preferred built-in iPhone voices (accents like British Daniel or Irish Moira, novelty voices like Zarvox for Unit 7, and a French voice for Chef Antoine). The app uses the first one the phone has, preferring an Enhanced/Premium download of it, and falls back to the default voice. Which voices exist varies by iPhone and by what the user has downloaded in Settings > Accessibility > Spoken Content > Voices.
+- The pep talk screen keeps its big button above the on-screen keyboard, and the keyboard's "done" key asks for the first pep talk, so you don't have to dismiss the keyboard first.
+- Simulator testing quirk: the Simulator's automated typing is slow, so taps sent right after typing can land late. This isn't an app bug.

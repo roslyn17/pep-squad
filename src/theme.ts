@@ -11,6 +11,9 @@ export const colors = {
   track: '#EFE6D8', // background of the intensity selector
   gold: '#F4C56A', // accents on dark surfaces
   dark: '#1F1B16', // victory screen, featured card
+  darkRaised: '#34302A', // cards and buttons on dark screens
+  textOnDark: '#FBF6EE',
+  textOnDarkSecondary: '#CFC6BA',
 };
 
 export const fonts = {

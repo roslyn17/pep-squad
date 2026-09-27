@@ -51,7 +51,9 @@ export default function RootLayout() {
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
         }}
-      />
+      >
+        <Stack.Screen name="victory" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+      </Stack>
     </>
   );
 }
