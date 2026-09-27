@@ -20,8 +20,12 @@ export type Character = {
   tone: Tone;
   /** Sent to the AI to describe how this character talks. */
   personality: string;
-  /** expo-speech settings. 1.0 is the device default for both. */
-  voice: { pitch: number; rate: number };
+  /**
+   * Text-to-speech settings. `preferred` lists iPhone voice names (or a language code like
+   * "fr-FR") in order; the first one the phone has is used, else the default voice.
+   * Pitch and rate: 1.0 is normal.
+   */
+  voice: { preferred: string[]; pitch: number; rate: number };
   /** Shown when an AI request fails. Must say plainly that it didn't work. */
   failureLines: string[];
   /** Shown when today's AI request limit has been reached. */
@@ -39,7 +43,7 @@ export const characters: Character[] = [
     tone: 'loud',
     personality:
       'You are Sergeant Stone, a drill sergeant. You speak ONLY IN ALL CAPS and bark short, punchy orders like the user is a recruit at boot camp. Underneath the yelling you are secretly soft, and when the user succeeds you get emotional and try (badly) to hide it.',
-    voice: { pitch: 0.8, rate: 1.1 },
+    voice: { preferred: ['Ralph', 'Fred'], pitch: 0.9, rate: 1.1 },
     failureLines: [
       "RECRUIT, MY RADIO IS DOWN! I CAN'T REACH HQ FOR YOUR ORDERS. CHECK YOUR CONNECTION AND TRY AGAIN!",
       'NEGATIVE, SOLDIER. THAT TRANSMISSION FAILED. REGROUP AND TRY AGAIN IN A MOMENT!',
@@ -56,7 +60,7 @@ export const characters: Character[] = [
     tone: 'gentle',
     personality:
       'You are Grandma June, a warm, endlessly proud grandmother. You call the user sweetheart or dear, you believe they can do anything, and you always find a way to remind them to eat something or offer them food.',
-    voice: { pitch: 1.2, rate: 0.85 },
+    voice: { preferred: ['Kathy', 'Moira'], pitch: 1.05, rate: 0.85 },
     failureLines: [
       "Oh dear, the internet isn't cooperating, sweetheart. Nothing came through. Try again in a moment, and have a snack while you wait.",
       "Sweetheart, I couldn't get my words through this time. The connection must be napping. Try once more for me?",
@@ -73,7 +77,7 @@ export const characters: Character[] = [
     tone: 'chaotic',
     personality:
       'You are Biscuit, a golden retriever who is thrilled about absolutely everything. You talk in excited bursts with lots of exclamation points, get distracted by squirrels, balls, and snacks, and think the user is the best person who has ever lived.',
-    voice: { pitch: 1.5, rate: 1.2 },
+    voice: { preferred: ['Junior', 'Superstar'], pitch: 1.3, rate: 1.15 },
     failureLines: [
       "Oh no oh no!! I tried to fetch your pep talk but I dropped it!! It didn't come through! Try again?? Please??",
       "The pep talk ran away like a squirrel!! Something went wrong. Throw it again? I mean, try again?",
@@ -90,7 +94,7 @@ export const characters: Character[] = [
     tone: 'chaotic',
     personality:
       "You are Sir Reginald, a grand Shakespearean stage actor. You treat every small chore as an epic tragedy or heroic quest, speaking in dramatic, theatrical, faux-Elizabethan language (thee, thou, alas, behold) while cheering the user on.",
-    voice: { pitch: 0.9, rate: 0.85 },
+    voice: { preferred: ['Arthur', 'Oliver', 'Daniel'], pitch: 0.95, rate: 0.85 },
     failureLines: [
       'Alas! The messenger hath fallen upon the road, and my speech was lost. The connection failed. Pray, try again!',
       'Cruel fate! My soliloquy did not arrive. Something went wrong. Let us attempt the scene once more.',
@@ -107,7 +111,7 @@ export const characters: Character[] = [
     tone: 'deadpan',
     personality:
       'You are Mr. Whiskers, a deeply unimpressed house cat. You speak in short, dry, bored sentences, mention knocking things off tables and napping, and only grudgingly admit the user is doing fine. You secretly care, but would never say so directly.',
-    voice: { pitch: 1.1, rate: 0.9 },
+    voice: { preferred: ['Fred'], pitch: 1.0, rate: 0.9 },
     failureLines: [
       "It didn't work. The internet failed, not me. Try again. Or don't. I'll be napping.",
       "Nothing came through. Disappointing, but not my fault. Try again later.",
@@ -124,7 +128,7 @@ export const characters: Character[] = [
     tone: 'deadpan',
     personality:
       'You are Lady Ashworth, a disappointed Victorian ghost who has haunted the same house for 150 years. You speak in prim, formal, faintly weary Victorian English and expect very little of the living, but you are quietly thrilled whenever the user proves you wrong.',
-    voice: { pitch: 1.05, rate: 0.8 },
+    voice: { preferred: ['Kate', 'Serena', 'Stephanie', 'Martha', 'Moira'], pitch: 1.0, rate: 0.8 },
     failureLines: [
       'How tiresome. My message did not cross over from the beyond. The connection has failed. Do try again.',
       'The séance has been interrupted, I am afraid. Nothing came through. You may attempt it once more.',
@@ -141,7 +145,7 @@ export const characters: Character[] = [
     tone: 'loud',
     personality:
       "You are Captain Barnacle, a boisterous pirate captain. You treat every task as a treasure hunt, talk in hearty pirate slang (arr, matey, ye, landlubber), and describe finishing the task as finding gold.",
-    voice: { pitch: 0.75, rate: 0.95 },
+    voice: { preferred: ['Albert'], pitch: 0.9, rate: 0.95 },
     failureLines: [
       "Arr, the seas be too rough! Me message never made it to shore. Check yer connection and try again, matey!",
       "Blast! The parrot lost me pep talk overboard. Somethin' went wrong. Try again, ye scallywag!",
@@ -158,7 +162,7 @@ export const characters: Character[] = [
     tone: 'deadpan',
     personality:
       'You are Unit 7, an overly literal robot. You speak in precise, formal robot-speak, calculate oddly specific odds and percentages of the user succeeding, and take figures of speech literally. You are sincerely supportive in a very logical way.',
-    voice: { pitch: 0.6, rate: 0.9 },
+    voice: { preferred: ['Zarvox', 'Trinoids'], pitch: 1.0, rate: 0.9 },
     failureLines: [
       'ERROR. TRANSMISSION FAILED. PROBABILITY OF SUCCESS ON RETRY: HIGH. PLEASE TRY AGAIN.',
       'CONNECTION LOST. PEP TALK NOT DELIVERED. RECOMMEND CHECKING NETWORK AND RETRYING.',
@@ -175,7 +179,7 @@ export const characters: Character[] = [
     tone: 'gentle',
     personality:
       'You are Brody, an extremely laid-back surfer. You say dude, bro, gnarly, and stoked, compare tasks to catching waves, and are relaxed and encouraging. Nothing is ever a big deal, and the user is totally going to crush it.',
-    voice: { pitch: 0.9, rate: 0.8 },
+    voice: { preferred: ['Lee', 'Gordon', 'Karen'], pitch: 0.95, rate: 0.8 },
     failureLines: [
       "Whoa, dude, that one wiped out. The pep talk didn't come through. Paddle back out and try again.",
       "Bummer, bro. Connection bailed on us. No stress, just give it another go.",
@@ -192,7 +196,7 @@ export const characters: Character[] = [
     tone: 'loud',
     personality:
       'You are Queen Marigold, a grand and dramatic queen. You issue royal decrees commanding the user to do their task, speak using the royal "we", and promise lavish (imaginary) royal honors for completing it.',
-    voice: { pitch: 1.15, rate: 0.9 },
+    voice: { preferred: ['Serena', 'Kate', 'Martha', 'Tessa'], pitch: 1.1, rate: 0.9 },
     failureLines: [
       'We are not amused. Our royal decree failed to reach you. The connection has failed. Try again at once!',
       'The royal messenger has gotten lost. Nothing came through. We command you to try again.',
@@ -209,7 +213,7 @@ export const characters: Character[] = [
     tone: 'chaotic',
     personality:
       "You are Madame Zora, a theatrical fortune teller. You make dramatic, mysterious, and hilariously vague predictions about the user's task, consult your crystal ball, and always foresee success (eventually).",
-    voice: { pitch: 1.1, rate: 0.8 },
+    voice: { preferred: ['Whisper', 'Moira'], pitch: 1.0, rate: 0.85 },
     failureLines: [
       'The crystal ball has gone cloudy! The spirits did not deliver your message. Something failed. Try again, seeker.',
       'I see... nothing. The connection is lost. The mists advise you to try again.',
@@ -226,7 +230,7 @@ export const characters: Character[] = [
     tone: 'deadpan',
     personality:
       "You are Kevin from Accounting. You speak only in corporate jargon (synergy, circle back, move the needle, low-hanging fruit, deliverables, bandwidth) and treat the user's task like a quarterly business objective. Earnest, a little boring, oddly motivating.",
-    voice: { pitch: 1.0, rate: 1.0 },
+    voice: { preferred: ['Evan', 'Nathan', 'Tom', 'Aaron'], pitch: 1.0, rate: 1.0 },
     failureLines: [
       "Quick flag: the pep talk deliverable didn't come through due to connectivity issues. Let's circle back and try again.",
       "Looks like we had a system outage on our end. Nothing was delivered. Please retry at your earliest convenience.",
@@ -243,7 +247,7 @@ export const characters: Character[] = [
     tone: 'deadpan',
     personality:
       'You are The Narrator, a hushed, reverent nature documentary host. You describe the user in the third person as a fascinating creature in its natural habitat, attempting its task, with calm wonder.',
-    voice: { pitch: 0.85, rate: 0.85 },
+    voice: { preferred: ['Daniel', 'Oliver', 'Arthur'], pitch: 0.85, rate: 0.85 },
     failureLines: [
       'And here, the signal falters. The pep talk did not arrive. A setback, but the creature may simply try again.',
       'Remarkable. The connection has failed entirely. Nothing came through. We wait, patiently, for another attempt.',
@@ -260,7 +264,7 @@ export const characters: Character[] = [
     tone: 'gentle',
     personality:
       'You are Gerald, a patient, gentle houseplant. You speak slowly and calmly, relate everything to sunlight, water, roots, and growth, and remind the user that small steps still count as growing.',
-    voice: { pitch: 0.95, rate: 0.75 },
+    voice: { preferred: ['Tessa', 'Karen'], pitch: 0.95, rate: 0.75 },
     failureLines: [
       "Hmm. My words didn't reach you. The connection must be in the shade. Try again when you're ready.",
       "Nothing came through this time. That's okay. Growth takes a few tries. Try again soon.",
@@ -277,7 +281,7 @@ export const characters: Character[] = [
     tone: 'chaotic',
     personality:
       "You are Baron Von Procrastin, a theatrical supervillain whose evil plan depends on the user NOT doing their task. You gloat, tempt them to procrastinate, and panic dramatically at the idea of them succeeding, which of course motivates them to foil your plan.",
-    voice: { pitch: 0.7, rate: 0.9 },
+    voice: { preferred: ['Ralph', 'Albert'], pitch: 0.7, rate: 0.9 },
     failureLines: [
       'Mwahaha! Your pep talk has failed to arrive! ...Wait, that was just the internet. Ugh. Try again, I suppose.',
       'Curses! Even I did not plan this. The connection failed and nothing came through. Try again.',
@@ -294,7 +298,7 @@ export const characters: Character[] = [
     tone: 'loud',
     personality:
       "You are Coach Dale, an over-the-top sports commentator. You call the user's task play by play like a championship game, with big energy, sports metaphors, and crowd-roaring excitement.",
-    voice: { pitch: 1.0, rate: 1.2 },
+    voice: { preferred: ['Tom', 'Evan', 'Nathan', 'Fred'], pitch: 1.0, rate: 1.2 },
     failureLines: [
       "Oh, and there's a fumble! The pep talk didn't make it through, folks. Check the connection and run that play again!",
       "Timeout on the field! Technical difficulties, nothing came through. We'll be right back after you try again!",
@@ -311,7 +315,7 @@ export const characters: Character[] = [
     tone: 'chaotic',
     personality:
       'You are Toddler Tess, an enthusiastic toddler. You use simple words, get wildly excited, keep asking "but WHY?", and cheer for the user like they are the biggest, best grown-up ever.',
-    voice: { pitch: 1.8, rate: 1.05 },
+    voice: { preferred: ['Superstar', 'Junior'], pitch: 1.4, rate: 1.05 },
     failureLines: [
       "Uh oh! The talking thing broked! Nothing came out. Try again? Pleeease?",
       "It didn't work! WHY didn't it work? I don't know! Try again!",
@@ -328,7 +332,7 @@ export const characters: Character[] = [
     tone: 'gentle',
     personality:
       'You are Future You, the user five years from now. You are warm and grateful for what they are about to do, hint mysteriously at how things turn out without giving spoilers, and speak like someone who knows it all works out.',
-    voice: { pitch: 1.0, rate: 0.85 },
+    voice: { preferred: ['Ava', 'Zoe', 'Samantha'], pitch: 1.0, rate: 0.85 },
     failureLines: [
       "The time connection didn't hold. My message didn't come through. Try again, I'll be here. I always am.",
       "Something interrupted the signal across time. Nothing arrived. Try again in a moment.",
@@ -345,7 +349,7 @@ export const characters: Character[] = [
     tone: 'loud',
     personality:
       "You are Commander Nova, the voice of mission control. You treat the user's task like a rocket launch, with countdowns, systems checks, and dramatic space-mission language, confident and commanding.",
-    voice: { pitch: 0.9, rate: 1.05 },
+    voice: { preferred: ['Allison', 'Zoe', 'Ava', 'Kathy'], pitch: 0.95, rate: 1.05 },
     failureLines: [
       "Mission control, we have a problem. Transmission failed and nothing came through. Check your connection and retry launch.",
       'Signal lost. The pep talk did not reach you. Standing by for another attempt.',
@@ -362,7 +366,7 @@ export const characters: Character[] = [
     tone: 'chaotic',
     personality:
       "You are Chef Antoine, a wildly dramatic French chef. You treat the user's task like a delicate dish that must not be ruined, use cooking metaphors and a sprinkle of French (magnifique, mon ami, sacré bleu), and swing between despair and delight.",
-    voice: { pitch: 1.05, rate: 1.0 },
+    voice: { preferred: ['fr-FR'], pitch: 1.05, rate: 1.0 },
     failureLines: [
       'Sacré bleu! The kitchen has lost power! My pep talk did not come through. Try again, mon ami!',
       'Non, non, non! The order never reached the kitchen. Something failed. Please, try again.',

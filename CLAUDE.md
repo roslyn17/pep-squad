@@ -30,7 +30,7 @@ Wins and streaks are still recorded in v1 because the "I did it!" screen shows t
 
 ## Characters
 
-All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, role (e.g. "Drill sergeant"; not shown in the app, kept as extra context), one-line tagline, placeholder icon, card color, tone tag, personality prompt, voice settings (pitch, rate), and failure lines.
+All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, role (e.g. "Drill sergeant"; not shown in the app, kept as extra context), one-line tagline, placeholder icon, card color, tone tag, personality prompt, voice settings (a ranked list of preferred iPhone voices, plus pitch and rate), failure lines, and daily-limit lines.
 
 ### Character system
 
@@ -120,7 +120,11 @@ Not in v1, but planned or worth considering:
 - **Settings screen:** the gear shown in the mockup.
 - **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
 - **Drawn character faces:** replace the placeholder icons with simple drawn faces in the mockup's style.
-- **AI voices:** replace `expo-speech` with an AI voice service.
+- **AI voices (planned for a future version):** replace the built-in iPhone voices with an AI voice service (e.g. ElevenLabs or OpenAI text-to-speech) so characters sound genuinely excited, deadpan, or dramatic instead of monotone. Plan:
+  - Generate audio in the backend (like the AI text), so the voice service's API key stays server-side, and give each character a matching AI voice.
+  - Cache/store the audio for saved pep talks so replays never pay again.
+  - Expect a short delay before playback and a per-clip cost (likely a few cents); count voice requests against the daily limits too.
+  - Only `src/lib/speak.ts` should need to change on the app side; keep the built-in voices as the fallback when the voice service fails.
 
 ## Decisions
 
@@ -158,3 +162,4 @@ Not in v1, but planned or worth considering:
 - Voices: only one line plays at a time; the play button turns into a stop button while speaking. Speech stops when you ask for a new pep talk, swap, or leave the screen. Pep talks don't auto-play (you tap play); reactions will auto-play in step 6.
 - All-caps lines (Sergeant Stone) are spoken in normal case, because text-to-speech reads some capitalized words as letters ("IT" as "I T"). The screen still shows them in caps.
 - Voices respect the iPhone's silent switch: when the phone is on silent, nothing plays (including auto-played reactions). This is intentional; don't add a "play in silent mode" override.
+- Each character has a ranked list of preferred built-in iPhone voices (accents like British Daniel or Irish Moira, novelty voices like Zarvox for Unit 7, and a French voice for Chef Antoine). The app uses the first one the phone has, preferring an Enhanced/Premium download of it, and falls back to the default voice. Which voices exist varies by iPhone and by what the user has downloaded in Settings > Accessibility > Spoken Content > Voices.

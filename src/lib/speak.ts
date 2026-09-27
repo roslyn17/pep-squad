@@ -34,6 +34,37 @@ function forSpeech(text: string): string {
   return letters.length > 0 && upper / letters.length > 0.6 ? text.toLowerCase() : text;
 }
 
+// The phone's installed voices, loaded once. iOS sometimes returns an empty list on the very
+// first call, so an empty result isn't cached.
+let voicesCache: Speech.Voice[] | null = null;
+async function installedVoices(): Promise<Speech.Voice[]> {
+  if (voicesCache) return voicesCache;
+  const voices = await Speech.getAvailableVoicesAsync().catch(() => []);
+  if (voices.length > 0) voicesCache = voices;
+  return voices;
+}
+
+const isEnhanced = (voice: Speech.Voice) => voice.quality === Speech.VoiceQuality.Enhanced;
+
+/**
+ * Picks the character's voice: the first of their preferred voices that this phone has,
+ * using an Enhanced/Premium download of it when available. Undefined = the phone's default.
+ */
+async function voiceFor(character: Character): Promise<string | undefined> {
+  const voices = await installedVoices();
+  for (const preference of character.voice.preferred) {
+    const isLanguage = /^[a-z]{2}-[A-Z]{2}$/.test(preference);
+    const matches = voices.filter((v) =>
+      isLanguage
+        ? v.language === preference
+        : v.name === preference || v.name.startsWith(`${preference} (`), // e.g. "Daniel (Enhanced)"
+    );
+    const best = matches.find(isEnhanced) ?? matches[0];
+    if (best) return best.identifier;
+  }
+  return undefined;
+}
+
 // Only one line plays at a time across the whole app. Screens subscribe to know what's playing.
 let currentId: string | null = null;
 const listeners = new Set<(id: string | null) => void>();
@@ -44,16 +75,18 @@ function setCurrent(id: string | null) {
 }
 
 /** Reads `text` aloud in the character's voice. `id` identifies what's playing (e.g. a pep talk). */
-export function speak(id: string, text: string, character: Character) {
+export async function speak(id: string, text: string, character: Character) {
   Speech.stop();
   setCurrent(id);
+  const voice = await voiceFor(character);
+  if (currentId !== id) return; // stopped or replaced while the voice list was loading
   const finished = () => {
     if (currentId === id) setCurrent(null);
   };
   Speech.speak(forSpeech(text), {
     pitch: character.voice.pitch,
     rate: character.voice.rate,
-    language: 'en-US',
+    ...(voice ? { voice } : { language: 'en-US' }),
     onDone: finished,
     onStopped: finished,
     onError: finished,
