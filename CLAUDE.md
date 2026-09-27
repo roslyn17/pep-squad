@@ -19,7 +19,7 @@ The tone is playful. The characters should be funny first and motivating second.
 ## Screens
 
 1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
-2. **Pep talk:** character header, text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
+2. **Pep talk:** character header (name, the role in a small chip under it, then the tagline on its own line), text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task and intensity.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
    - Intensity defaults to Fired up. Tasks are capped at 120 characters.

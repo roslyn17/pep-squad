@@ -29,7 +29,7 @@ export function SwapSheet({ visible, options, onPick, onClose }: Props) {
             <Ionicons name="close" size={22} color={colors.text} />
           </Pressable>
         </View>
-        <Text style={styles.subtitle}>Same task, same intensity, new voice.</Text>
+        <Text style={styles.subtitle}>Same task, new voice.</Text>
         <ScrollView>
           {options.map((character) => (
             <Pressable

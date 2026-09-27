@@ -95,11 +95,12 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
               <Text style={styles.name} accessibilityRole="header">
                 {character.name}
               </Text>
-              <Text style={styles.role}>
-                {character.role} · {character.tagline}
-              </Text>
+              <View style={styles.roleChip}>
+                <Text style={styles.roleText}>{character.role}</Text>
+              </View>
             </View>
           </View>
+          <Text style={styles.tagline}>{character.tagline}</Text>
         </View>
 
         <View style={styles.body}>
@@ -197,12 +198,27 @@ const styles = StyleSheet.create({
     color: colors.text,
     letterSpacing: -0.3,
   },
-  role: {
-    fontFamily: fonts.body,
-    fontSize: 15,
-    lineHeight: 20,
+  roleChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.65)',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginTop: 6,
+  },
+  roleText: {
+    fontFamily: fonts.bodyBold,
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
     color: colors.textSecondary,
-    marginTop: 2,
+  },
+  tagline: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 17,
+    lineHeight: 24,
+    color: colors.text,
+    marginTop: 16,
   },
   body: {
     paddingHorizontal: spacing.screen,
