@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -41,7 +42,10 @@ function SquadGrid({ squad }: { squad: Character[] }) {
         <View key={row[0].id} style={styles.row}>
           {row.map((character) => (
             <View key={character.id} style={styles.cell}>
-              <CharacterCard character={character} />
+              <CharacterCard
+                character={character}
+                onPress={() => router.push({ pathname: '/pep-talk/[id]', params: { id: character.id } })}
+              />
             </View>
           ))}
           {row.length === 1 && <View style={styles.cell} />}

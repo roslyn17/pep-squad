@@ -10,7 +10,7 @@ The tone is playful. The characters should be funny first and motivating second.
 
 - React Native with Expo (managed workflow), TypeScript, Expo Router for navigation.
 - Test in the iOS Simulator (Expo Go, via Xcode) day to day, and check on a real iPhone with Expo Go at milestones: when voices arrive (step 5) and before calling v1 done.
-- Voices: `expo-speech` (built-in device text-to-speech) for v1. Each character gets its own pitch and rate. An AI voice service may replace this later, so keep speech behind one small module (e.g. `src/lib/speak.ts`). `expo-speech` can't report clip length, so the play-button durations (e.g. "0:09") are estimated from the text length.
+- Voices: `expo-speech` (built-in device text-to-speech) for v1. Each character gets its own pitch and rate. An AI voice service may replace this later, so keep speech behind one small module (e.g. `src/lib/speak.ts`). `expo-speech` can't report clip length, so the play-button durations (e.g. "0:09") are estimated from the word count and the character's speech rate (`estimateDurationSeconds` in `src/lib/speak.ts`).
 - AI pep talks: the Anthropic API, called ONLY through a small serverless backend function on Vercel, kept in an `api/` folder in this repo. The API key lives in the backend's environment variables and must never appear in the app code or be committed to git.
 - Local storage for saved pep talks, wins, and streaks (e.g. AsyncStorage). No user accounts in v1.
 - Fonts: Bricolage Grotesque (headings) and DM Sans (body) via `@expo-google-fonts`.
@@ -21,7 +21,8 @@ The tone is playful. The characters should be funny first and motivating second.
 1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
 2. **Pep talk:** character header, text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task and intensity.
-   - "I did it!" is only enabled after a pep talk has been generated.
+   - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
+   - Intensity defaults to Fired up. Tasks are capped at 120 characters.
 3. **I did it!:** the character's reaction (with play button, auto-plays), current streak, progress toward the next unlock, and "Back to the squad." The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, intensity, snippet, play button), with filter chips by character.
 
@@ -87,7 +88,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 
 1. ✅ Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
 2. ✅ Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
-3. Pep talk screen UI with a hard-coded sample response.
+3. ✅ Pep talk screen UI with a hard-coded sample response.
 4. Serverless backend function and real AI pep talks.
 5. Voice playback with `expo-speech`.
 6. "I did it!" screen with the AI reaction (auto-play voice).
@@ -146,3 +147,5 @@ Not in v1, but planned or worth considering:
 - Placeholder avatars are icons, not emoji: emoji don't render in the iOS Simulator (they show as "?" boxes). Drawn faces are a future feature.
 - The Squad screen has a dashed "Dev only: re-roll my squad" button for testing the random starting squad. It only appears in development (`__DEV__`), never in the real app.
 - `react-dom` is installed only to satisfy Expo's peer dependencies (npm otherwise fails to install packages). It's used for web, not the iPhone app.
+- The mockup doesn't show the pep talk screen before a pep talk exists, so a "Pep me up!" button fills that slot until the first pep talk, then turns into "I did it!".
+- All pep talk requests go through `requestPepTalk()` in `src/lib/pepTalk.ts`. In step 3 it returns a clearly labeled sample; step 4 swaps in the real AI call without screen changes.

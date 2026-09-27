@@ -7,6 +7,8 @@ export const colors = {
   text: '#1F1B16',
   textSecondary: '#6B6259',
   accent: '#C2410C', // tomato orange: primary buttons, active tab
+  onAccent: '#FFFFFF', // text and icons on orange
+  track: '#EFE6D8', // background of the intensity selector
   gold: '#F4C56A', // accents on dark surfaces
   dark: '#1F1B16', // victory screen, featured card
 };
