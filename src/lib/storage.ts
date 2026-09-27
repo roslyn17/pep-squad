@@ -6,6 +6,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const KEYS = {
   squad: 'pepsquad:v1:squad', // array of character ids
   deviceId: 'pepsquad:v1:deviceId', // anonymous id for the backend's per-phone daily limit
+  saved: 'pepsquad:v1:saved', // array of SavedPepTalk, newest first
+};
+
+export type SavedPepTalk = {
+  id: string;
+  characterId: string;
+  task: string;
+  text: string;
+  savedAt: string; // ISO date
 };
 
 async function readJson<T>(key: string): Promise<T | null> {
@@ -37,4 +46,12 @@ export async function getDeviceId(): Promise<string> {
   const id = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
   await AsyncStorage.setItem(KEYS.deviceId, id);
   return id;
+}
+
+export async function loadSavedPepTalks(): Promise<SavedPepTalk[]> {
+  return (await readJson<SavedPepTalk[]>(KEYS.saved)) ?? [];
+}
+
+export function writeSavedPepTalks(items: SavedPepTalk[]): Promise<void> {
+  return writeJson(KEYS.saved, items);
 }

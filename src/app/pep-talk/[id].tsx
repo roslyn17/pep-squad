@@ -10,6 +10,7 @@ import { SpeechBubble } from '@/components/SpeechBubble';
 import { SwapSheet } from '@/components/SwapSheet';
 import { Character, getCharacter } from '@/data/characters';
 import { PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
+import { removeSavedPepTalk, savePepTalk, useSavedPepTalks } from '@/lib/saved';
 import { useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
 import { colors, fonts, radius, spacing } from '@/theme';
@@ -48,7 +49,14 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   const [result, setResult] = useState<PepTalkResult | null>(null);
   // Changes with every new result, so the play button knows which line it's playing.
   const [resultId, setResultId] = useState('');
+  // The task as it was when this pep talk was made (the text box may be edited afterwards).
+  const [resultTask, setResultTask] = useState('');
   const speech = useSpeech();
+  // Which saved entry (if any) is the pep talk on screen. Checked against the saved list, so
+  // removing it from the Saved tab flips this button back to "Save".
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const savedList = useSavedPepTalks();
+  const isSaved = !!savedId && !!savedList?.some((item) => item.id === savedId);
   const [loading, setLoading] = useState(false);
   const [swapOpen, setSwapOpen] = useState(false);
   // Ignores a slow response if a newer request (Again or Swap) was started after it.
@@ -63,17 +71,30 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   async function generate(forCharacter: Character) {
     if (!trimmedTask) return;
     const requestId = ++latestRequest.current;
+    const taskForRequest = trimmedTask;
     Keyboard.dismiss();
     speech.stop();
     setLoading(true);
     try {
-      const next = await requestPepTalk(forCharacter, trimmedTask);
+      const next = await requestPepTalk(forCharacter, taskForRequest);
       if (requestId === latestRequest.current) {
         setResult(next);
         setResultId(`pep-talk-${requestId}`);
+        setResultTask(taskForRequest);
+        setSavedId(null);
       }
     } finally {
       if (requestId === latestRequest.current) setLoading(false);
+    }
+  }
+
+  async function toggleSave() {
+    if (result?.status !== 'ok') return;
+    if (isSaved && savedId) {
+      await removeSavedPepTalk(savedId);
+      setSavedId(null);
+    } else {
+      setSavedId(await savePepTalk({ characterId: character.id, task: resultTask, text: result.text }));
     }
   }
 
@@ -152,8 +173,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
             <>
               <View style={styles.actions}>
                 <SecondaryButton label="Again" onPress={() => generate(character)} disabled={loading} />
-                {/* Save arrives in step 7. */}
-                <SecondaryButton label="Save" disabled={loading} />
+                <SecondaryButton label={isSaved ? 'Saved ✓' : 'Save'} onPress={toggleSave} disabled={loading} />
                 <SecondaryButton
                   label="Swap"
                   onPress={() => setSwapOpen(true)}
@@ -177,7 +197,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
               speech.stop();
               router.push({
                 pathname: '/victory',
-                params: { characterId: character.id, task: trimmedTask },
+                params: { characterId: character.id, task: resultTask },
               });
             }}
           />
@@ -269,7 +289,7 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   bubble: {
-    marginTop: 24,
+    marginTop: 2,
   },
   actions: {
     flexDirection: 'row',

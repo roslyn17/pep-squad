@@ -24,7 +24,7 @@ The tone is playful. The characters should be funny first and motivating second.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
    - Tasks are capped at 120 characters.
 3. **I did it!:** a full-screen dark page (`src/app/victory.tsx`) with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), current streak and progress toward the next unlock (added in step 8), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
-4. **Saved:** saved pep talks as cards (character, task, snippet, play button), with filter chips by character.
+4. **Saved:** saved pep talks as cards (character, task, full text, play button), newest first, with filter chips ("All" plus each character that has saved pep talks). Playing a saved pep talk reads the stored text; it never calls the AI. Press and hold a card to remove it (with a confirmation).
 
 Wins and streaks are still recorded in v1 because the "I did it!" screen shows the streak and unlock progress, and unlocks happen every 10 wins. A streak is the number of consecutive days with at least one win, using the phone's local time.
 
@@ -92,7 +92,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 4. ✅ Serverless backend function and real AI pep talks.
 5. ✅ Voice playback with `expo-speech`.
 6. ✅ "I did it!" screen with the AI reaction (auto-play voice).
-7. Saving pep talks and the Saved tab.
+7. ✅ Saving pep talks and the Saved tab.
 8. Recording wins and streaks (shown on the "I did it!" screen).
 9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3), haptics, notifications.
 
@@ -165,3 +165,6 @@ Not in v1, but planned or worth considering:
 - The pep talk screen keeps its big button above the on-screen keyboard, and the keyboard's "done" key asks for the first pep talk, so you don't have to dismiss the keyboard first.
 - Simulator testing quirk: the Simulator's automated typing is slow, so taps sent right after typing can land late. This isn't an app bug.
 - No intensity setting: the Gentle / Fired up / Full chaos selector was removed from the app, backend, and mockup. Each character's personality sets their energy.
+- Save on the pep talk screen toggles: "Save" becomes "Saved ✓", and tapping again un-saves it. Saved pep talks are stored on the phone under one key (see `src/lib/storage.ts`) and shared live between screens via `src/lib/saved.ts`.
+- The task saved (and shown on the victory screen) is the task as it was when the pep talk was made, even if the text box is edited afterwards.
+- Playback on the Saved tab stops when you switch tabs.
