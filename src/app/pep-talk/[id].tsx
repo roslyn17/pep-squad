@@ -140,7 +140,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
 
         <View style={styles.body}>
           <Text style={styles.label} nativeID="taskLabel">
-            What do you need a push for?
+            What do you need a pep talk for?
           </Text>
           <TextInput
             value={task}

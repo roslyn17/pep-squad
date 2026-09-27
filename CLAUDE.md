@@ -19,7 +19,7 @@ The tone is playful. The characters should be funny first and motivating second.
 ## Screens
 
 1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
-2. **Pep talk:** character header (icon, with the name and the tagline stacked beside it), text input ("What do you need a push for?"), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
+2. **Pep talk:** character header (icon, with the name and the tagline stacked beside it), text input ("What do you need a pep talk for?"), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
    - Tasks are capped at 120 characters.
@@ -117,6 +117,10 @@ Not in v1, but planned or worth considering:
 
 - **User accounts:** sign-in so a user's squad, wins, and saved pep talks sync across devices and survive reinstalling. This would allow true per-person AI limits. When added, upload the data already on the phone at sign-up so nobody loses progress. Until then, keep all stored data in one clearly organized place (e.g. a single `src/lib/storage.ts` module) so it's easy to sync later. Apple requires in-app account deletion, and Sign in with Apple if any other social sign-in is offered.
 - **Sharing:** "Share this moment" from the victory screen (removed from v1).
+- **Send a pep talk to a friend:** pick a squad member, type what your friend needs a pep talk for (e.g. "their job interview"), and send it. The friend gets the pep talk and can play it in the character's voice. Things to decide when this is built:
+  - How it's delivered: simplest is a text/link through the iPhone share sheet (overlaps with Sharing above); richer is receiving it inside the friend's own Pep Squad app, which needs a link that opens the app (and likely User accounts) plus the backend storing sent pep talks.
+  - What the friend sees if they don't have the app (e.g. a simple web page with the text and a "get Pep Squad" link).
+  - Safety: characters stay kind, so the AI rules already block mean messages; sent pep talks count against the sender's daily AI limit.
 - **Settings screen:** the gear shown in the mockup.
 - **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
 - **Drawn character faces:** replace the placeholder icons with simple drawn faces in the mockup's style.
