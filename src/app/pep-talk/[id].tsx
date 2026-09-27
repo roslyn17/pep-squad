@@ -101,9 +101,9 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
               <Text style={styles.name} accessibilityRole="header">
                 {character.name}
               </Text>
+              <Text style={styles.tagline}>{character.tagline}</Text>
             </View>
           </View>
-          <Text style={styles.tagline}>{character.tagline}</Text>
         </View>
 
         <View style={styles.body}>
@@ -203,11 +203,11 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   tagline: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 17,
-    lineHeight: 24,
-    color: colors.text,
-    marginTop: 16,
+    fontFamily: fonts.body,
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   body: {
     paddingHorizontal: spacing.screen,
