@@ -157,4 +157,4 @@ Not in v1, but planned or worth considering:
 - The Anthropic account uses prepaid credits with auto-reload off, so running out stops requests instead of charging more.
 - Voices: only one line plays at a time; the play button turns into a stop button while speaking. Speech stops when you ask for a new pep talk, swap, or leave the screen. Pep talks don't auto-play (you tap play); reactions will auto-play in step 6.
 - All-caps lines (Sergeant Stone) are spoken in normal case, because text-to-speech reads some capitalized words as letters ("IT" as "I T"). The screen still shows them in caps.
-- On a real iPhone, expo-speech is silent when the ring/silent switch is on silent. Playing through silent mode would need an extra audio package; not done yet.
+- Voices respect the iPhone's silent switch: when the phone is on silent, nothing plays (including auto-played reactions). This is intentional; don't add a "play in silent mode" override.
