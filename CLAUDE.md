@@ -29,7 +29,7 @@ Wins and streaks are still recorded in v1 because the "I did it!" screen shows t
 
 ## Characters
 
-All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, one-line tagline, card color, tone tag, personality prompt, and voice settings (pitch, rate).
+All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, role (e.g. "Drill sergeant", shown on the pep talk screen), one-line tagline, placeholder icon, card color, tone tag, personality prompt, voice settings (pitch, rate), and failure lines.
 
 ### Character system
 
@@ -39,26 +39,26 @@ All character data lives in ONE file (`src/data/characters.ts`) so adding or twe
 
 ### Character bank
 
-- **Sergeant Stone:** drill sergeant, yells in all caps, gets emotional when you succeed.
-- **Grandma June:** endlessly proud, always wants you to eat something.
-- **Biscuit:** golden retriever, thrilled about everything, including nothing.
-- **Sir Reginald:** Shakespearean actor, treats chores like epic tragedies.
-- **Mr. Whiskers:** unimpressed cat, grudgingly admits you did fine.
-- **Lady Ashworth:** disappointed Victorian ghost, quietly thrilled when you prove her wrong.
-- **Captain Barnacle:** pirate who treats tasks as treasure hunts.
-- **Unit 7:** overly literal robot who calculates your odds of success.
-- **Brody:** extremely chill surfer.
-- **Queen Marigold:** issues royal decrees commanding you to do your task.
-- **Madame Zora:** fortune teller with dramatic, vague predictions.
-- **Kevin from Accounting:** speaks only in corporate jargon.
-- **The Narrator:** nature documentary voice observing you in your habitat.
-- **Gerald:** patient houseplant who relates everything to sunlight and water.
-- **Baron Von Procrastin:** villain who wants you to fail, so doing the task foils his plan.
-- **Coach Dale:** sports commentator calling your task play by play.
-- **Toddler Tess:** huge hype, endless "but WHY?" questions.
-- **Future You:** you from five years from now, grateful and slightly cryptic.
-- **Commander Nova:** mission control, treats tasks like rocket launches.
-- **Chef Antoine:** dramatic chef, treats tasks like dishes that must not be ruined.
+- **Sergeant Stone** (loud): drill sergeant, yells in all caps, gets emotional when you succeed.
+- **Grandma June** (gentle): endlessly proud, always wants you to eat something.
+- **Biscuit** (chaotic): golden retriever, thrilled about everything, including nothing.
+- **Sir Reginald** (chaotic): Shakespearean actor, treats chores like epic tragedies.
+- **Mr. Whiskers** (deadpan): unimpressed cat, grudgingly admits you did fine.
+- **Lady Ashworth** (deadpan): disappointed Victorian ghost, quietly thrilled when you prove her wrong.
+- **Captain Barnacle** (loud): pirate who treats tasks as treasure hunts.
+- **Unit 7** (deadpan): overly literal robot who calculates your odds of success.
+- **Brody** (gentle): extremely chill surfer.
+- **Queen Marigold** (loud): issues royal decrees commanding you to do your task.
+- **Madame Zora** (chaotic): fortune teller with dramatic, vague predictions.
+- **Kevin from Accounting** (deadpan): speaks only in corporate jargon.
+- **The Narrator** (deadpan): nature documentary voice observing you in your habitat.
+- **Gerald** (gentle): patient houseplant who relates everything to sunlight and water.
+- **Baron Von Procrastin** (chaotic): villain who wants you to fail, so doing the task foils his plan.
+- **Coach Dale** (loud): sports commentator calling your task play by play.
+- **Toddler Tess** (chaotic): huge hype, endless "but WHY?" questions.
+- **Future You** (gentle): you from five years from now, grateful and slightly cryptic.
+- **Commander Nova** (loud): mission control, treats tasks like rocket launches.
+- **Chef Antoine** (chaotic): dramatic chef, treats tasks like dishes that must not be ruined.
 
 ## AI prompting
 
@@ -79,14 +79,14 @@ The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See
 - Accent: tomato orange `#C2410C` (primary buttons, active tab). Gold `#F4C56A` on dark surfaces.
 - Dark surfaces (victory screen, featured card): `#1F1B16`.
 - Rounded cards (about 20px radius), generous padding, touch targets at least 44px.
-- Characters are simple drawn faces as placeholders until real art exists.
+- Characters use a placeholder icon (from MaterialCommunityIcons) in a soft circle until drawn faces exist. All avatars go through `src/components/CharacterAvatar.tsx`, so swapping in faces later only touches that file.
 
 ## Build order
 
 Build one step at a time. Each step should work in Expo Go in the iOS Simulator before moving on.
 
 1. ✅ Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
-2. Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
+2. ✅ Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
 3. Pep talk screen UI with a hard-coded sample response.
 4. Serverless backend function and real AI pep talks.
 5. Voice playback with `expo-speech`.
@@ -118,6 +118,7 @@ Not in v1, but planned or worth considering:
 - **Sharing:** "Share this moment" from the victory screen (removed from v1).
 - **Settings screen:** the gear shown in the mockup.
 - **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
+- **Drawn character faces:** replace the placeholder icons with simple drawn faces in the mockup's style.
 - **AI voices:** replace `expo-speech` with an AI voice service.
 
 ## Decisions
@@ -141,3 +142,7 @@ Not in v1, but planned or worth considering:
 - No user accounts in v1: all data stays on the phone (AsyncStorage). This is simpler and faster to build, has no sign-up friction, and keeps data private. The trade-off is that data doesn't survive deleting the app or move to other devices, and per-device AI limits can be dodged, hence the global daily cap. Accounts are listed under Future features.
 - No Progress tab in v1: the tab bar is just Squad and Saved. Wins and streaks are still recorded for the victory screen and unlocks. The Progress tab is listed under Future features.
 - App code lives under `src/` (Expo's default layout), so paths like `data/characters.ts` in this file mean `src/data/characters.ts`. `AGENTS.md` holds Expo's own guidance for AI assistants and is imported at the top of this file.
+- Tone groups are uneven (gentle 4, loud 5, chaotic 6, deadpan 5), so gentle characters show up in starting squads a bit more often. That's fine.
+- Placeholder avatars are icons, not emoji: emoji don't render in the iOS Simulator (they show as "?" boxes). Drawn faces are a future feature.
+- The Squad screen has a dashed "Dev only: re-roll my squad" button for testing the random starting squad. It only appears in development (`__DEV__`), never in the real app.
+- `react-dom` is installed only to satisfy Expo's peer dependencies (npm otherwise fails to install packages). It's used for web, not the iPhone app.
