@@ -11,7 +11,7 @@ The tone is playful. The characters should be funny first and motivating second.
 - React Native with Expo (managed workflow), TypeScript, Expo Router for navigation.
 - Test in the iOS Simulator (Expo Go, via Xcode) day to day, and check on a real iPhone with Expo Go at milestones: when voices arrive (step 5) and before calling v1 done.
 - Voices: `expo-speech` (built-in device text-to-speech) for v1. Each character gets its own pitch and rate. An AI voice service may replace this later, so keep speech behind one small module (e.g. `src/lib/speak.ts`). `expo-speech` can't report clip length, so the play-button durations (e.g. "0:09") are estimated from the word count and the character's speech rate (`estimateDurationSeconds` in `src/lib/speak.ts`).
-- AI pep talks: the Anthropic API, called ONLY through a small serverless backend function on Vercel, kept in an `api/` folder in this repo. The API key lives in the backend's environment variables and must never appear in the app code or be committed to git.
+- AI pep talks: the Anthropic API, called ONLY through a small serverless backend function on Vercel. The backend lives in `backend/` (its own package.json; the function is `backend/api/pep-talk.ts`) and is deployed as the Vercel project **pep-squad-api** at https://pep-squad-api.vercel.app. It reads character personalities from `src/data/characters.ts`, so the app and backend share one character file. The app's backend address is in `src/config.ts`. The API key lives in the backend's environment variables and must never appear in the app code or be committed to git.
 - Local storage for saved pep talks, wins, and streaks (e.g. AsyncStorage). No user accounts in v1.
 - Fonts: Bricolage Grotesque (headings) and DM Sans (body) via `@expo-google-fonts`.
 - Expo SDK 57. App code lives in `src/`: screens in `src/app/` (Expo Router), shared UI in `src/components/`, colors and fonts in `src/theme.ts`. Screens use the tokens in `src/theme.ts` rather than raw color values.
@@ -68,8 +68,8 @@ All character data lives in ONE file (`src/data/characters.ts`) so adding or twe
 - Keep responses short (2 to 4 sentences) so they're fun to hear aloud.
 - Characters stay kind underneath the comedy: never genuinely insulting or mean about the user.
 - Use Claude Haiku 4.5 and cap response length with `max_tokens`.
-- The backend enforces a limit of 20 AI requests per day per device (pep talks and reactions combined), using an anonymous ID the app generates on first launch. Because that ID can be reset by reinstalling, the backend also enforces a global daily cap on total AI requests across all users; this is the real cost protection. The exact cap is set in step 4. When the limit is hit, show a friendly in-character message instead of an error.
-- When an AI call fails (no internet, server error), tell the user it failed using a pre-written, in-character line. Each character has its own failure lines in `src/data/characters.ts`. Never show a fake pep talk as if the AI wrote it.
+- The backend enforces a limit of 20 AI requests per day per device (pep talks and reactions combined), using an anonymous ID the app generates on first launch. Because that ID can be reset by reinstalling, the backend also enforces a global daily cap of 100 requests across all users; this is the real cost protection. Change it with the `GLOBAL_DAILY_LIMIT` environment variable in Vercel (no code change needed). Days reset at midnight UTC. Counters live in Upstash for Redis (free plan, connected to the Vercel project). When the limit is hit, show a friendly in-character message instead of an error.
+- When an AI call fails (no internet, server error), tell the user it failed using a pre-written, in-character line. Each character has its own failure lines and daily-limit lines in `src/data/characters.ts`. After a failure, the big button reads "Try again". Never show a fake pep talk as if the AI wrote it.
 - Replaying a saved pep talk never makes a new AI call.
 
 ## Design
@@ -89,7 +89,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 1. ✅ Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
 2. ✅ Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
 3. ✅ Pep talk screen UI with a hard-coded sample response.
-4. Serverless backend function and real AI pep talks.
+4. ✅ Serverless backend function and real AI pep talks.
 5. Voice playback with `expo-speech`.
 6. "I did it!" screen with the AI reaction (auto-play voice).
 7. Saving pep talks and the Saved tab.
@@ -150,3 +150,8 @@ Not in v1, but planned or worth considering:
 - The mockup doesn't show the pep talk screen before a pep talk exists, so a "Pep me up!" button fills that slot until the first pep talk, then turns into "I did it!".
 - All pep talk requests go through `requestPepTalk()` in `src/lib/pepTalk.ts`. In step 3 it returns a clearly labeled sample; step 4 swaps in the real AI call without screen changes.
 - Character roles aren't displayed in the app (the name and tagline say enough). The `role` field stays in the data as extra context.
+- Backend lives in `backend/` rather than a top-level `api/` folder, so Vercel doesn't install the whole iPhone app or serve project files as a website. The Vercel project's Root Directory is `backend` with "include files outside the root directory" on, so it can read `src/data/characters.ts`.
+- The Anthropic API key is stored in Vercel as a Secret environment variable (`ANTHROPIC_API_KEY`). It never appears in the app, the repo, or chat.
+- Upstash added two reference guides for AI assistants in `.claude/skills/` (and `.agents/skills/`), tracked by `skills-lock.json`.
+- AI responses are capped at 2 to 4 sentences and about 60 words, so they're quick to hear aloud.
+- The Anthropic account uses prepaid credits with auto-reload off, so running out stops requests instead of charging more.

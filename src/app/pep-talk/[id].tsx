@@ -10,7 +10,7 @@ import { IntensitySelector } from '@/components/IntensitySelector';
 import { SpeechBubble } from '@/components/SpeechBubble';
 import { SwapSheet } from '@/components/SwapSheet';
 import { Character, getCharacter } from '@/data/characters';
-import { Intensity, requestPepTalk } from '@/lib/pepTalk';
+import { Intensity, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { useSquad } from '@/lib/squad';
 import { colors, fonts, radius, spacing } from '@/theme';
 
@@ -45,15 +45,18 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   const { squad } = useSquad();
   const [task, setTask] = useState('');
   const [intensity, setIntensity] = useState<Intensity>('fired-up');
-  const [pepTalk, setPepTalk] = useState<string | null>(null);
+  // The latest pep talk, or the character's "couldn't do it" line if the request failed.
+  const [result, setResult] = useState<PepTalkResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [swapOpen, setSwapOpen] = useState(false);
   // Ignores a slow response if a newer request (Again or Swap) was started after it.
   const latestRequest = useRef(0);
   const scrollRef = useRef<ScrollView>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   const trimmedTask = task.trim();
-  const hasPepTalk = pepTalk !== null || loading;
+  const hasPepTalk = result?.status === 'ok';
+  const showBubble = loading || result !== null;
 
   async function generate(forCharacter: Character) {
     if (!trimmedTask) return;
@@ -61,8 +64,8 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
     Keyboard.dismiss();
     setLoading(true);
     try {
-      const text = await requestPepTalk(forCharacter, trimmedTask, intensity);
-      if (requestId === latestRequest.current) setPepTalk(text);
+      const next = await requestPepTalk(forCharacter, trimmedTask, intensity);
+      if (requestId === latestRequest.current) setResult(next);
     } finally {
       if (requestId === latestRequest.current) setLoading(false);
     }
@@ -81,7 +84,9 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
       <ScrollView
         ref={scrollRef}
         // Bring the pep talk and its buttons into view when it appears.
-        onContentSizeChange={() => hasPepTalk && scrollRef.current?.scrollToEnd({ animated: true })}
+        onContentSizeChange={() => showBubble && scrollRef.current?.scrollToEnd({ animated: true })}
+        onScroll={(e) => setScrolled(e.nativeEvent.contentOffset.y > 4)}
+        scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
@@ -125,11 +130,18 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
           <Text style={styles.label}>Intensity</Text>
           <IntensitySelector value={intensity} onChange={setIntensity} />
 
+          {showBubble && (
+            <View style={styles.bubble}>
+              <SpeechBubble
+                character={character}
+                text={result?.text ?? null}
+                loading={loading}
+                variant={result?.status === 'ok' ? 'pep-talk' : 'notice'}
+              />
+            </View>
+          )}
           {hasPepTalk && (
             <>
-              <View style={styles.bubble}>
-                <SpeechBubble character={character} text={pepTalk} loading={loading} />
-              </View>
               <View style={styles.actions}>
                 <SecondaryButton label="Again" onPress={() => generate(character)} disabled={loading} />
                 {/* Save arrives in step 7. */}
@@ -145,12 +157,20 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
         </View>
       </ScrollView>
 
+      {/* Once scrolled, a solid strip sits behind the clock and battery so content doesn't show through. */}
+      {scrolled && <View style={[styles.statusBarCover, { height: insets.top }]} pointerEvents="none" />}
+
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         {hasPepTalk ? (
           // The "I did it!" screen arrives in step 6.
           <PrimaryButton label="I did it!" disabled={loading} />
         ) : (
-          <PrimaryButton label="Pep me up!" onPress={() => generate(character)} disabled={!trimmedTask} />
+          <PrimaryButton
+            label={result ? 'Try again' : 'Pep me up!'}
+            onPress={() => generate(character)}
+            disabled={!trimmedTask}
+            loading={loading}
+          />
         )}
       </View>
 
@@ -238,6 +258,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 14,
+  },
+  statusBarCover: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.background,
   },
   footer: {
     paddingHorizontal: spacing.screen,

@@ -42,3 +42,4 @@ yarn-error.*
 
 # env files (API keys must never be committed)
 .env*
+.vercel

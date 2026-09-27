@@ -9,17 +9,19 @@ type Props = {
   character: Character;
   text: string | null;
   loading: boolean;
+  /** "notice" = the character explaining that something didn't work: no play button, muted text. */
+  variant?: 'pep-talk' | 'notice';
   onPlay?: () => void;
 };
 
-export function SpeechBubble({ character, text, loading, onPlay }: Props) {
+export function SpeechBubble({ character, text, loading, variant = 'pep-talk', onPlay }: Props) {
   return (
     <View style={styles.card} accessibilityLiveRegion="polite">
       <View style={styles.header}>
         <Text style={styles.speaker} numberOfLines={2}>
           {character.name} says
         </Text>
-        {text && !loading && (
+        {text && !loading && variant === 'pep-talk' && (
           <PlayButton
             durationSeconds={estimateDurationSeconds(text, character.voice.rate)}
             onPress={onPlay}
@@ -32,7 +34,7 @@ export function SpeechBubble({ character, text, loading, onPlay }: Props) {
           <Text style={styles.loadingText}>{character.name} is thinking…</Text>
         </View>
       ) : (
-        <Text style={styles.body}>{text}</Text>
+        <Text style={[styles.body, variant === 'notice' && styles.notice]}>{text}</Text>
       )}
     </View>
   );
@@ -67,6 +69,10 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 26,
     color: colors.text,
+  },
+  notice: {
+    color: colors.textSecondary,
+    fontFamily: fonts.body,
   },
   loading: {
     flexDirection: 'row',

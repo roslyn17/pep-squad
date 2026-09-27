@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS = {
   squad: 'pepsquad:v1:squad', // array of character ids
+  deviceId: 'pepsquad:v1:deviceId', // anonymous id for the backend's per-phone daily limit
 };
 
 async function readJson<T>(key: string): Promise<T | null> {
@@ -27,4 +28,13 @@ export function loadSquadIds(): Promise<string[] | null> {
 
 export function saveSquadIds(ids: string[]): Promise<void> {
   return writeJson(KEYS.squad, ids);
+}
+
+/** A random anonymous id for this phone, created on first use. Not tied to the person. */
+export async function getDeviceId(): Promise<string> {
+  const existing = await AsyncStorage.getItem(KEYS.deviceId);
+  if (existing) return existing;
+  const id = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  await AsyncStorage.setItem(KEYS.deviceId, id);
+  return id;
 }

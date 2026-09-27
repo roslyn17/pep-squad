@@ -24,6 +24,8 @@ export type Character = {
   voice: { pitch: number; rate: number };
   /** Shown when an AI request fails. Must say plainly that it didn't work. */
   failureLines: string[];
+  /** Shown when today's AI request limit has been reached. */
+  limitLines: string[];
 };
 
 export const characters: Character[] = [
@@ -42,6 +44,7 @@ export const characters: Character[] = [
       "RECRUIT, MY RADIO IS DOWN! I CAN'T REACH HQ FOR YOUR ORDERS. CHECK YOUR CONNECTION AND TRY AGAIN!",
       'NEGATIVE, SOLDIER. THAT TRANSMISSION FAILED. REGROUP AND TRY AGAIN IN A MOMENT!',
     ],
+    limitLines: ['RECRUIT, THAT\'S ALL THE ORDERS I\'M CLEARED TO GIVE TODAY! REPORT BACK TOMORROW FOR MORE!'],
   },
   {
     id: 'grandma-june',
@@ -58,6 +61,7 @@ export const characters: Character[] = [
       "Oh dear, the internet isn't cooperating, sweetheart. Nothing came through. Try again in a moment, and have a snack while you wait.",
       "Sweetheart, I couldn't get my words through this time. The connection must be napping. Try once more for me?",
     ],
+    limitLines: ['Oh sweetheart, I\'ve talked your ear off today. Let\'s rest our voices and chat again tomorrow, okay?'],
   },
   {
     id: 'biscuit',
@@ -74,6 +78,7 @@ export const characters: Character[] = [
       "Oh no oh no!! I tried to fetch your pep talk but I dropped it!! It didn't come through! Try again?? Please??",
       "The pep talk ran away like a squirrel!! Something went wrong. Throw it again? I mean, try again?",
     ],
+    limitLines: ['I\'ve barked SO much today I\'m all out of barks!! More tomorrow, I promise!!'],
   },
   {
     id: 'sir-reginald',
@@ -90,6 +95,7 @@ export const characters: Character[] = [
       'Alas! The messenger hath fallen upon the road, and my speech was lost. The connection failed. Pray, try again!',
       'Cruel fate! My soliloquy did not arrive. Something went wrong. Let us attempt the scene once more.',
     ],
+    limitLines: ['Alas, the theater has closed for the night! Return on the morrow for another performance.'],
   },
   {
     id: 'mr-whiskers',
@@ -106,6 +112,7 @@ export const characters: Character[] = [
       "It didn't work. The internet failed, not me. Try again. Or don't. I'll be napping.",
       "Nothing came through. Disappointing, but not my fault. Try again later.",
     ],
+    limitLines: ['I\'ve done enough talking for one day. Come back tomorrow. Maybe.'],
   },
   {
     id: 'lady-ashworth',
@@ -122,6 +129,7 @@ export const characters: Character[] = [
       'How tiresome. My message did not cross over from the beyond. The connection has failed. Do try again.',
       'The séance has been interrupted, I am afraid. Nothing came through. You may attempt it once more.',
     ],
+    limitLines: ['I have spoken quite enough for one day. Do call again tomorrow, if you must.'],
   },
   {
     id: 'captain-barnacle',
@@ -138,6 +146,7 @@ export const characters: Character[] = [
       "Arr, the seas be too rough! Me message never made it to shore. Check yer connection and try again, matey!",
       "Blast! The parrot lost me pep talk overboard. Somethin' went wrong. Try again, ye scallywag!",
     ],
+    limitLines: ['Arr, we\'ve sailed all the seas we can today, matey! Drop anchor and try again tomorrow!'],
   },
   {
     id: 'unit-7',
@@ -154,6 +163,7 @@ export const characters: Character[] = [
       'ERROR. TRANSMISSION FAILED. PROBABILITY OF SUCCESS ON RETRY: HIGH. PLEASE TRY AGAIN.',
       'CONNECTION LOST. PEP TALK NOT DELIVERED. RECOMMEND CHECKING NETWORK AND RETRYING.',
     ],
+    limitLines: ['DAILY SPEECH QUOTA REACHED. RESUMING OPERATIONS TOMORROW. PROBABILITY OF YOUR SUCCESS IN THE MEANTIME: STILL HIGH.'],
   },
   {
     id: 'brody',
@@ -170,6 +180,7 @@ export const characters: Character[] = [
       "Whoa, dude, that one wiped out. The pep talk didn't come through. Paddle back out and try again.",
       "Bummer, bro. Connection bailed on us. No stress, just give it another go.",
     ],
+    limitLines: ['Dude, that\'s all the waves for today. Catch you tomorrow, bro.'],
   },
   {
     id: 'queen-marigold',
@@ -186,6 +197,7 @@ export const characters: Character[] = [
       'We are not amused. Our royal decree failed to reach you. The connection has failed. Try again at once!',
       'The royal messenger has gotten lost. Nothing came through. We command you to try again.',
     ],
+    limitLines: ['The royal court is closed for today. We shall issue new decrees tomorrow.'],
   },
   {
     id: 'madame-zora',
@@ -202,6 +214,7 @@ export const characters: Character[] = [
       'The crystal ball has gone cloudy! The spirits did not deliver your message. Something failed. Try again, seeker.',
       'I see... nothing. The connection is lost. The mists advise you to try again.',
     ],
+    limitLines: ['The spirits are exhausted for today. Return tomorrow, and the crystal ball shall speak again.'],
   },
   {
     id: 'kevin-from-accounting',
@@ -218,6 +231,7 @@ export const characters: Character[] = [
       "Quick flag: the pep talk deliverable didn't come through due to connectivity issues. Let's circle back and try again.",
       "Looks like we had a system outage on our end. Nothing was delivered. Please retry at your earliest convenience.",
     ],
+    limitLines: ['We\'ve hit our daily pep talk budget. Let\'s circle back tomorrow.'],
   },
   {
     id: 'the-narrator',
@@ -234,6 +248,7 @@ export const characters: Character[] = [
       'And here, the signal falters. The pep talk did not arrive. A setback, but the creature may simply try again.',
       'Remarkable. The connection has failed entirely. Nothing came through. We wait, patiently, for another attempt.',
     ],
+    limitLines: ['And so, the day\'s broadcasting draws to a close. We will resume observation tomorrow.'],
   },
   {
     id: 'gerald',
@@ -250,6 +265,7 @@ export const characters: Character[] = [
       "Hmm. My words didn't reach you. The connection must be in the shade. Try again when you're ready.",
       "Nothing came through this time. That's okay. Growth takes a few tries. Try again soon.",
     ],
+    limitLines: ['I\'ve used up all my sunlight for today. Let\'s grow some more tomorrow.'],
   },
   {
     id: 'baron-von-procrastin',
@@ -266,6 +282,7 @@ export const characters: Character[] = [
       'Mwahaha! Your pep talk has failed to arrive! ...Wait, that was just the internet. Ugh. Try again, I suppose.',
       'Curses! Even I did not plan this. The connection failed and nothing came through. Try again.',
     ],
+    limitLines: ['Aha! You\'ve used up all of today\'s pep talks! ...Fine, come back tomorrow. I\'ll be waiting.'],
   },
   {
     id: 'coach-dale',
@@ -282,6 +299,7 @@ export const characters: Character[] = [
       "Oh, and there's a fumble! The pep talk didn't make it through, folks. Check the connection and run that play again!",
       "Timeout on the field! Technical difficulties, nothing came through. We'll be right back after you try again!",
     ],
+    limitLines: ['That\'s the final whistle for today, folks! We\'ll be back tomorrow for more action!'],
   },
   {
     id: 'toddler-tess',
@@ -298,6 +316,7 @@ export const characters: Character[] = [
       "Uh oh! The talking thing broked! Nothing came out. Try again? Pleeease?",
       "It didn't work! WHY didn't it work? I don't know! Try again!",
     ],
+    limitLines: ['I\'m all talked out! Naptime! More tomorrow!'],
   },
   {
     id: 'future-you',
@@ -314,6 +333,7 @@ export const characters: Character[] = [
       "The time connection didn't hold. My message didn't come through. Try again, I'll be here. I always am.",
       "Something interrupted the signal across time. Nothing arrived. Try again in a moment.",
     ],
+    limitLines: ['That\'s all I can send back through time today. Try again tomorrow. Trust me.'],
   },
   {
     id: 'commander-nova',
@@ -330,6 +350,7 @@ export const characters: Character[] = [
       "Mission control, we have a problem. Transmission failed and nothing came through. Check your connection and retry launch.",
       'Signal lost. The pep talk did not reach you. Standing by for another attempt.',
     ],
+    limitLines: ['Mission control is closing for the day. Next launch window opens tomorrow.'],
   },
   {
     id: 'chef-antoine',
@@ -346,6 +367,7 @@ export const characters: Character[] = [
       'Sacré bleu! The kitchen has lost power! My pep talk did not come through. Try again, mon ami!',
       'Non, non, non! The order never reached the kitchen. Something failed. Please, try again.',
     ],
+    limitLines: ['The kitchen is closed for today, mon ami! Come back tomorrow for a fresh batch.'],
   },
 ];
 
