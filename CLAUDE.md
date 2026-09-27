@@ -7,7 +7,7 @@ The tone is playful. The characters should be funny first and motivating second.
 ## Tech stack
 
 - React Native with Expo (managed workflow), TypeScript, Expo Router for navigation.
-- Test on a real phone with Expo Go throughout development.
+- Test in the iOS Simulator (Expo Go, via Xcode) day to day, and check on a real iPhone with Expo Go at milestones: when voices arrive (step 5) and before calling v1 done.
 - Voices: `expo-speech` (built-in device text-to-speech) for v1. Each character gets its own pitch and rate. An AI voice service may replace this later, so keep speech behind one small module (e.g. `lib/speak.ts`). `expo-speech` can't report clip length, so the play-button durations (e.g. "0:09") are estimated from the text length.
 - AI pep talks: the Anthropic API, called ONLY through a small serverless backend function on Vercel, kept in an `api/` folder in this repo. The API key lives in the backend's environment variables and must never appear in the app code or be committed to git.
 - Local storage for saved pep talks, wins, and streaks (e.g. AsyncStorage). No user accounts in v1.
@@ -80,7 +80,7 @@ The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See
 
 ## Build order
 
-Build one step at a time. Each step should work on a phone in Expo Go before moving on.
+Build one step at a time. Each step should work in Expo Go in the iOS Simulator before moving on.
 
 1. Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
 2. Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
@@ -134,6 +134,6 @@ Not in v1, but planned or worth considering:
 - Voice clip durations are estimated from the text length.
 - The character's face doesn't change on the victory screen.
 - Backend is a Vercel function in `api/` in this repo.
-- Test device: iPhone with Expo Go.
+- Test in the iOS Simulator day to day, since it's faster to iterate; check on a real iPhone at milestones for voices, haptics, and how buttons feel under a thumb.
 - No user accounts in v1: all data stays on the phone (AsyncStorage). This is simpler and faster to build, has no sign-up friction, and keeps data private. The trade-off is that data doesn't survive deleting the app or move to other devices, and per-device AI limits can be dodged, hence the global daily cap. Accounts are listed under Future features.
 - No Progress tab in v1: the tab bar is just Squad and Saved. Wins and streaks are still recorded for the victory screen and unlocks. The Progress tab is listed under Future features.
