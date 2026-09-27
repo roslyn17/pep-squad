@@ -177,3 +177,4 @@ Not in v1, but planned or worth considering:
 - "I didn't do it" added as a core feature: side-by-side with "I did it!", same reaction screen with a gentler message. Costs one AI request like "I did it!".
 - The play button double-checks with iOS that speech has really finished before switching back to play, because iOS can report "done" early when one line is cut off and another starts.
 - The backend strips asterisks from AI replies (they'd be read aloud or look like formatting).
+- Development builds get a higher per-device limit (100/day) for testing: the app sends `EXPO_PUBLIC_DEV_LIMIT_KEY` from `.env.development.local` (on the developer's Mac only, git-ignored, only loaded in development) and the backend compares it to the `DEV_LIMIT_KEY` Secret in Vercel. Real users stay at 20, and the 100/day global cap still applies to everyone. To test the real 20 limit, temporarily rename `.env.development.local` and restart the dev server.

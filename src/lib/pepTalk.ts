@@ -36,7 +36,14 @@ export async function requestPepTalk(
   try {
     const response = await fetch(`${API_BASE_URL}/api/pep-talk`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        // Development builds only: unlocks the higher testing limit. The key comes from
+        // .env.development.local on the developer's Mac (never committed, never in release builds).
+        ...(__DEV__ && process.env.EXPO_PUBLIC_DEV_LIMIT_KEY
+          ? { 'x-pep-dev-key': process.env.EXPO_PUBLIC_DEV_LIMIT_KEY }
+          : {}),
+      },
       body: JSON.stringify({
         kind,
         characterId: character.id,

@@ -12,6 +12,9 @@ const MODEL = 'claude-haiku-4-5';
 const MAX_TOKENS = 300; // 2-4 sentences fits comfortably; this is a cost ceiling, not a target.
 const MAX_TASK_LENGTH = 120; // matches the app's text box
 const PER_DEVICE_DAILY_LIMIT = 20;
+// Development builds (on the developer's Mac) send DEV_LIMIT_KEY and get a higher per-device
+// limit for testing. The global cap below still applies to everyone.
+const DEV_PER_DEVICE_DAILY_LIMIT = 100;
 // Total requests per day across everyone: the real cost protection. Change it in Vercel's
 // environment variables without redeploying code.
 const GLOBAL_DAILY_LIMIT = Number(process.env.GLOBAL_DAILY_LIMIT ?? 100);
@@ -67,7 +70,7 @@ function parseRequest(body: unknown): ValidRequest | null {
 }
 
 /** Counts this request against today's limits. Returns false if either limit is used up. */
-async function withinDailyLimits(redis: Redis, deviceId: string): Promise<boolean> {
+async function withinDailyLimits(redis: Redis, deviceId: string, perDeviceLimit: number): Promise<boolean> {
   const day = new Date().toISOString().slice(0, 10); // UTC date, e.g. 2026-09-27
   const globalKey = `usage:${day}:global`;
   const deviceKey = `usage:${day}:device:${deviceId}`;
@@ -78,7 +81,7 @@ async function withinDailyLimits(redis: Redis, deviceId: string): Promise<boolea
   pipeline.expire(globalKey, 60 * 60 * 48);
   pipeline.expire(deviceKey, 60 * 60 * 48);
   const [globalCount, deviceCount] = (await pipeline.exec()) as [number, number, unknown, unknown];
-  return globalCount <= GLOBAL_DAILY_LIMIT && deviceCount <= PER_DEVICE_DAILY_LIMIT;
+  return globalCount <= GLOBAL_DAILY_LIMIT && deviceCount <= perDeviceLimit;
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -93,7 +96,10 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const redis = Redis.fromEnv();
-    if (!(await withinDailyLimits(redis, req.deviceId))) {
+    const devKey = process.env.DEV_LIMIT_KEY;
+    const isDev = !!devKey && request.headers.get('x-pep-dev-key') === devKey;
+    const perDeviceLimit = isDev ? DEV_PER_DEVICE_DAILY_LIMIT : PER_DEVICE_DAILY_LIMIT;
+    if (!(await withinDailyLimits(redis, req.deviceId, perDeviceLimit))) {
       return json({ error: 'limit' }, 429);
     }
 

@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Character } from '@/data/characters';
 
 // Average speaking pace at the device's default rate (1.0).
-const WORDS_PER_SECOND_AT_DEFAULT_RATE = 2.6;
+const WORDS_PER_SECOND_AT_DEFAULT_RATE = 3.3; // measured in the Simulator
 
 /**
  * Roughly how long the text takes to say aloud, in whole seconds. expo-speech can't report
