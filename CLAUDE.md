@@ -19,7 +19,7 @@ The tone is playful. The characters should be funny first and motivating second.
 ## Screens
 
 1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
-2. **Pep talk:** character header (name with the role in a small chip beside it, then the tagline on its own line), text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
+2. **Pep talk:** character header (name, then the tagline on its own line), text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task and intensity.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it becomes "I did it!", and the pep talk plus Again / Save / Swap appear.
    - Intensity defaults to Fired up. Tasks are capped at 120 characters.
@@ -30,7 +30,7 @@ Wins and streaks are still recorded in v1 because the "I did it!" screen shows t
 
 ## Characters
 
-All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, role (e.g. "Drill sergeant", shown on the pep talk screen), one-line tagline, placeholder icon, card color, tone tag, personality prompt, voice settings (pitch, rate), and failure lines.
+All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, role (e.g. "Drill sergeant"; not shown in the app, kept as extra context), one-line tagline, placeholder icon, card color, tone tag, personality prompt, voice settings (pitch, rate), and failure lines.
 
 ### Character system
 
@@ -149,3 +149,4 @@ Not in v1, but planned or worth considering:
 - `react-dom` is installed only to satisfy Expo's peer dependencies (npm otherwise fails to install packages). It's used for web, not the iPhone app.
 - The mockup doesn't show the pep talk screen before a pep talk exists, so a "Pep me up!" button fills that slot until the first pep talk, then turns into "I did it!".
 - All pep talk requests go through `requestPepTalk()` in `src/lib/pepTalk.ts`. In step 3 it returns a clearly labeled sample; step 4 swaps in the real AI call without screen changes.
+- Character roles aren't displayed in the app (the name and tagline say enough). The `role` field stays in the data as extra context.
