@@ -96,6 +96,8 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 6. ✅ "I did it!" screen with the AI reaction (auto-play voice).
 7. ✅ Saving pep talks and the Saved tab.
 8. Recording wins and streaks (shown on the "I did it!" screen).
+   - Remember reactions per pep talk: the first "I did it!" / "I didn't do it" reaction for a pep talk is kept, so going back and forth shows the same reaction instantly with no new AI request. A new pep talk (Again, Swap, new task) resets them.
+   - The same pep talk can only count as one win, no matter how many times "I did it!" is tapped.
 9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3), haptics, notifications.
 
 ## Working rules
