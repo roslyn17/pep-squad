@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # Pep Squad
 
 A silly motivation app. You pick a character from "the squad," tell them what you need motivation for, and they give you a pep talk in their own style, out loud. When you finish the task, you tap "I did it!" and the same character reacts.
@@ -8,10 +10,11 @@ The tone is playful. The characters should be funny first and motivating second.
 
 - React Native with Expo (managed workflow), TypeScript, Expo Router for navigation.
 - Test in the iOS Simulator (Expo Go, via Xcode) day to day, and check on a real iPhone with Expo Go at milestones: when voices arrive (step 5) and before calling v1 done.
-- Voices: `expo-speech` (built-in device text-to-speech) for v1. Each character gets its own pitch and rate. An AI voice service may replace this later, so keep speech behind one small module (e.g. `lib/speak.ts`). `expo-speech` can't report clip length, so the play-button durations (e.g. "0:09") are estimated from the text length.
+- Voices: `expo-speech` (built-in device text-to-speech) for v1. Each character gets its own pitch and rate. An AI voice service may replace this later, so keep speech behind one small module (e.g. `src/lib/speak.ts`). `expo-speech` can't report clip length, so the play-button durations (e.g. "0:09") are estimated from the text length.
 - AI pep talks: the Anthropic API, called ONLY through a small serverless backend function on Vercel, kept in an `api/` folder in this repo. The API key lives in the backend's environment variables and must never appear in the app code or be committed to git.
 - Local storage for saved pep talks, wins, and streaks (e.g. AsyncStorage). No user accounts in v1.
 - Fonts: Bricolage Grotesque (headings) and DM Sans (body) via `@expo-google-fonts`.
+- Expo SDK 57. App code lives in `src/`: screens in `src/app/` (Expo Router), shared UI in `src/components/`, colors and fonts in `src/theme.ts`. Screens use the tokens in `src/theme.ts` rather than raw color values.
 
 ## Screens
 
@@ -26,7 +29,7 @@ Wins and streaks are still recorded in v1 because the "I did it!" screen shows t
 
 ## Characters
 
-All character data lives in ONE file (`data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, one-line tagline, card color, tone tag, personality prompt, and voice settings (pitch, rate).
+All character data lives in ONE file (`src/data/characters.ts`) so adding or tweaking characters never requires touching screen code. Each character has: id, name, one-line tagline, card color, tone tag, personality prompt, and voice settings (pitch, rate).
 
 ### Character system
 
@@ -65,7 +68,7 @@ All character data lives in ONE file (`data/characters.ts`) so adding or tweakin
 - Characters stay kind underneath the comedy: never genuinely insulting or mean about the user.
 - Use Claude Haiku 4.5 and cap response length with `max_tokens`.
 - The backend enforces a limit of 20 AI requests per day per device (pep talks and reactions combined), using an anonymous ID the app generates on first launch. Because that ID can be reset by reinstalling, the backend also enforces a global daily cap on total AI requests across all users; this is the real cost protection. The exact cap is set in step 4. When the limit is hit, show a friendly in-character message instead of an error.
-- When an AI call fails (no internet, server error), tell the user it failed using a pre-written, in-character line. Each character has its own failure lines in `data/characters.ts`. Never show a fake pep talk as if the AI wrote it.
+- When an AI call fails (no internet, server error), tell the user it failed using a pre-written, in-character line. Each character has its own failure lines in `src/data/characters.ts`. Never show a fake pep talk as if the AI wrote it.
 - Replaying a saved pep talk never makes a new AI call.
 
 ## Design
@@ -82,7 +85,7 @@ The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See
 
 Build one step at a time. Each step should work in Expo Go in the iOS Simulator before moving on.
 
-1. Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
+1. ✅ Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
 2. Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
 3. Pep talk screen UI with a hard-coded sample response.
 4. Serverless backend function and real AI pep talks.
@@ -111,7 +114,7 @@ This file is the source of truth for the project. Update it whenever something c
 
 Not in v1, but planned or worth considering:
 
-- **User accounts:** sign-in so a user's squad, wins, and saved pep talks sync across devices and survive reinstalling. This would allow true per-person AI limits. When added, upload the data already on the phone at sign-up so nobody loses progress. Until then, keep all stored data in one clearly organized place (e.g. a single `lib/storage.ts` module) so it's easy to sync later. Apple requires in-app account deletion, and Sign in with Apple if any other social sign-in is offered.
+- **User accounts:** sign-in so a user's squad, wins, and saved pep talks sync across devices and survive reinstalling. This would allow true per-person AI limits. When added, upload the data already on the phone at sign-up so nobody loses progress. Until then, keep all stored data in one clearly organized place (e.g. a single `src/lib/storage.ts` module) so it's easy to sync later. Apple requires in-app account deletion, and Sign in with Apple if any other social sign-in is offered.
 - **Sharing:** "Share this moment" from the victory screen (removed from v1).
 - **Settings screen:** the gear shown in the mockup.
 - **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
@@ -137,3 +140,4 @@ Not in v1, but planned or worth considering:
 - Test in the iOS Simulator day to day, since it's faster to iterate; check on a real iPhone at milestones for voices, haptics, and how buttons feel under a thumb.
 - No user accounts in v1: all data stays on the phone (AsyncStorage). This is simpler and faster to build, has no sign-up friction, and keeps data private. The trade-off is that data doesn't survive deleting the app or move to other devices, and per-device AI limits can be dodged, hence the global daily cap. Accounts are listed under Future features.
 - No Progress tab in v1: the tab bar is just Squad and Saved. Wins and streaks are still recorded for the victory screen and unlocks. The Progress tab is listed under Future features.
+- App code lives under `src/` (Expo's default layout), so paths like `data/characters.ts` in this file mean `src/data/characters.ts`. `AGENTS.md` holds Expo's own guidance for AI assistants and is imported at the top of this file.
