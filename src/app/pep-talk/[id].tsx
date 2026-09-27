@@ -11,6 +11,7 @@ import { SpeechBubble } from '@/components/SpeechBubble';
 import { SwapSheet } from '@/components/SwapSheet';
 import { Character, getCharacter } from '@/data/characters';
 import { Intensity, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
+import { useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
 import { colors, fonts, radius, spacing } from '@/theme';
 
@@ -47,6 +48,9 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   const [intensity, setIntensity] = useState<Intensity>('fired-up');
   // The latest pep talk, or the character's "couldn't do it" line if the request failed.
   const [result, setResult] = useState<PepTalkResult | null>(null);
+  // Changes with every new result, so the play button knows which line it's playing.
+  const [resultId, setResultId] = useState('');
+  const speech = useSpeech();
   const [loading, setLoading] = useState(false);
   const [swapOpen, setSwapOpen] = useState(false);
   // Ignores a slow response if a newer request (Again or Swap) was started after it.
@@ -62,10 +66,14 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
     if (!trimmedTask) return;
     const requestId = ++latestRequest.current;
     Keyboard.dismiss();
+    speech.stop();
     setLoading(true);
     try {
       const next = await requestPepTalk(forCharacter, trimmedTask, intensity);
-      if (requestId === latestRequest.current) setResult(next);
+      if (requestId === latestRequest.current) {
+        setResult(next);
+        setResultId(`pep-talk-${requestId}`);
+      }
     } finally {
       if (requestId === latestRequest.current) setLoading(false);
     }
@@ -137,6 +145,8 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
                 text={result?.text ?? null}
                 loading={loading}
                 variant={result?.status === 'ok' ? 'pep-talk' : 'notice'}
+                playing={speech.playingId === resultId}
+                onPlay={() => result && speech.toggle(resultId, result.text, character)}
               />
             </View>
           )}

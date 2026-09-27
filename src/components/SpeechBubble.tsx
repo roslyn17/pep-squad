@@ -11,10 +11,18 @@ type Props = {
   loading: boolean;
   /** "notice" = the character explaining that something didn't work: no play button, muted text. */
   variant?: 'pep-talk' | 'notice';
+  playing?: boolean;
   onPlay?: () => void;
 };
 
-export function SpeechBubble({ character, text, loading, variant = 'pep-talk', onPlay }: Props) {
+export function SpeechBubble({
+  character,
+  text,
+  loading,
+  variant = 'pep-talk',
+  playing = false,
+  onPlay,
+}: Props) {
   return (
     <View style={styles.card} accessibilityLiveRegion="polite">
       <View style={styles.header}>
@@ -24,6 +32,7 @@ export function SpeechBubble({ character, text, loading, variant = 'pep-talk', o
         {text && !loading && variant === 'pep-talk' && (
           <PlayButton
             durationSeconds={estimateDurationSeconds(text, character.voice.rate)}
+            playing={playing}
             onPress={onPlay}
           />
         )}

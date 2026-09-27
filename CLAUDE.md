@@ -90,7 +90,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 2. ✅ Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
 3. ✅ Pep talk screen UI with a hard-coded sample response.
 4. ✅ Serverless backend function and real AI pep talks.
-5. Voice playback with `expo-speech`.
+5. ✅ Voice playback with `expo-speech`.
 6. "I did it!" screen with the AI reaction (auto-play voice).
 7. Saving pep talks and the Saved tab.
 8. Recording wins and streaks (shown on the "I did it!" screen).
@@ -155,3 +155,6 @@ Not in v1, but planned or worth considering:
 - Upstash added two reference guides for AI assistants in `.claude/skills/` (and `.agents/skills/`), tracked by `skills-lock.json`.
 - AI responses are capped at 2 to 4 sentences and about 60 words, so they're quick to hear aloud.
 - The Anthropic account uses prepaid credits with auto-reload off, so running out stops requests instead of charging more.
+- Voices: only one line plays at a time; the play button turns into a stop button while speaking. Speech stops when you ask for a new pep talk, swap, or leave the screen. Pep talks don't auto-play (you tap play); reactions will auto-play in step 6.
+- All-caps lines (Sergeant Stone) are spoken in normal case, because text-to-speech reads some capitalized words as letters ("IT" as "I T"). The screen still shows them in caps.
+- On a real iPhone, expo-speech is silent when the ring/silent switch is on silent. Playing through silent mode would need an extra audio package; not done yet.

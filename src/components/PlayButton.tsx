@@ -6,6 +6,8 @@ import { colors, fonts, minTouchSize } from '@/theme';
 
 type Props = {
   durationSeconds: number;
+  /** True while this line is being read aloud: the button becomes a stop button. */
+  playing?: boolean;
   onPress?: () => void;
   /** "light" = orange pill on light screens; "dark" = gold pill on the dark victory screen. */
   variant?: 'light' | 'dark';
@@ -14,7 +16,7 @@ type Props = {
 // Decorative waveform bar heights, matching the mockup's little sound-wave graphic.
 const BARS = [8, 14, 10, 18, 12, 16, 8];
 
-export function PlayButton({ durationSeconds, onPress, variant = 'light' }: Props) {
+export function PlayButton({ durationSeconds, playing = false, onPress, variant = 'light' }: Props) {
   const background = variant === 'light' ? colors.accent : colors.gold;
   const foreground = variant === 'light' ? colors.onAccent : colors.dark;
   return (
@@ -22,9 +24,9 @@ export function PlayButton({ durationSeconds, onPress, variant = 'light' }: Prop
       onPress={onPress}
       style={({ pressed }) => [styles.pill, { backgroundColor: background }, pressed && styles.pressed]}
       accessibilityRole="button"
-      accessibilityLabel={`Play, about ${durationSeconds} seconds`}
+      accessibilityLabel={playing ? 'Stop' : `Play, about ${durationSeconds} seconds`}
     >
-      <Ionicons name="play" size={18} color={foreground} />
+      <Ionicons name={playing ? 'stop' : 'play'} size={18} color={foreground} />
       <View style={styles.wave}>
         {BARS.map((h, i) => (
           <View key={i} style={[styles.bar, { height: h, backgroundColor: foreground }]} />
