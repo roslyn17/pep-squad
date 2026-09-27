@@ -16,6 +16,12 @@ import { colors, fonts, radius, spacing } from '@/theme';
 
 const MAX_TASK_LENGTH = 120;
 
+// Goes back if there's a screen to return to; otherwise lands on the Squad tab.
+function backToSquad() {
+  if (router.canGoBack()) router.back();
+  else router.replace('/');
+}
+
 export default function PepTalkScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [characterId, setCharacterId] = useState(id);
@@ -26,7 +32,7 @@ export default function PepTalkScreen() {
     return (
       <View style={[styles.notFound, { paddingTop: insets.top + 24 }]}>
         <Text style={styles.notFoundText}>We couldn't find that squad member.</Text>
-        <SecondaryButton label="Back to the squad" onPress={() => router.back()} />
+        <SecondaryButton label="Back to the squad" onPress={() => backToSquad()} />
       </View>
     );
   }
@@ -82,7 +88,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
       >
         <View style={[styles.header, { backgroundColor: character.cardColor, paddingTop: insets.top + 8 }]}>
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => backToSquad()}
             style={styles.backButton}
             accessibilityRole="button"
             accessibilityLabel="Back to the squad"

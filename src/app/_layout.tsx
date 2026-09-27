@@ -15,6 +15,12 @@ import { useEffect } from 'react';
 
 import { colors } from '@/theme';
 
+// Always keep the tabs underneath any other screen, even when a screen is opened directly
+// (e.g. from a link or, later, a notification), so "back" has somewhere to go.
+export const unstable_settings = {
+  anchor: '(tabs)',
+};
+
 // Keep the splash screen up until the fonts are ready, so text never flashes in the wrong font.
 SplashScreen.preventAutoHideAsync();
 
