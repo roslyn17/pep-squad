@@ -19,6 +19,12 @@ function backToSquad() {
   router.dismissTo('/');
 }
 
+// Closes just this screen, back to the pep talk (still there, with its text and buttons).
+function backToPepTalk() {
+  if (router.canGoBack()) router.back();
+  else backToSquad();
+}
+
 export default function VictoryScreen() {
   const params = useLocalSearchParams<{ characterId: string; task: string; intensity: Intensity }>();
   const character = getCharacter(params.characterId ?? '');
@@ -69,10 +75,10 @@ export default function VictoryScreen() {
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 8, paddingBottom: 24 }]}
       >
         <Pressable
-          onPress={backToSquad}
+          onPress={backToPepTalk}
           style={styles.close}
           accessibilityRole="button"
-          accessibilityLabel="Close"
+          accessibilityLabel="Back to the pep talk"
         >
           <Ionicons name="close" size={26} color={colors.textOnDark} />
         </Pressable>
@@ -117,7 +123,14 @@ export default function VictoryScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
-        <OutlineButton label="Back to the squad" onPress={backToSquad} />
+        <Pressable
+          onPress={backToSquad}
+          style={({ pressed }) => [styles.primary, pressed && { opacity: 0.85 }]}
+          accessibilityRole="button"
+        >
+          <Text style={styles.primaryText}>Back to the squad</Text>
+        </Pressable>
+        <OutlineButton label="See my pep talk again" onPress={backToPepTalk} />
       </View>
     </View>
   );
@@ -230,7 +243,20 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: spacing.screen,
     paddingTop: 12,
+    gap: 12,
     backgroundColor: colors.dark,
+  },
+  primary: {
+    minHeight: 60,
+    borderRadius: radius.card,
+    backgroundColor: colors.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryText: {
+    fontFamily: fonts.bodyBold,
+    fontSize: 18,
+    color: colors.dark,
   },
   outline: {
     minHeight: 60,
