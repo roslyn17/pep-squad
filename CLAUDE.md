@@ -15,14 +15,14 @@ The tone is playful. The characters should be funny first and motivating second.
 
 ## Screens
 
-1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved, Progress. The settings gear shown in the mockup is not in v1.
+1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
 2. **Pep talk:** character header, text input ("What do you need a push for?"), 3-tier intensity selector (Gentle / Fired up / Full chaos), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and a big "I did it!" button.
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task and intensity.
    - "I did it!" is only enabled after a pep talk has been generated.
 3. **I did it!:** the character's reaction (with play button, auto-plays), current streak, progress toward the next unlock, and "Back to the squad." The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, intensity, snippet, play button), with filter chips by character.
-5. **Progress:** streak, wins this week (bar chart by day), top motivator, next unlock, recent wins.
-   - A streak is the number of consecutive days with at least one win, using the phone's local time.
+
+Wins and streaks are still recorded in v1 because the "I did it!" screen shows the streak and unlock progress, and unlocks happen every 10 wins. A streak is the number of consecutive days with at least one win, using the phone's local time.
 
 ## Characters
 
@@ -70,7 +70,7 @@ All character data lives in ONE file (`data/characters.ts`) so adding or tweakin
 
 ## Design
 
-The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See all 8" count, the settings gear), this file wins.
+The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See all 8" count, the settings gear, the Progress tab), this file wins.
 
 - Background: warm cream `#FBF6EE`. Text: `#1F1B16`. Secondary text: `#6B6259`.
 - Accent: tomato orange `#C2410C` (primary buttons, active tab). Gold `#F4C56A` on dark surfaces.
@@ -82,14 +82,14 @@ The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See
 
 Build one step at a time. Each step should work on a phone in Expo Go before moving on.
 
-1. Expo project setup, fonts, colors, tab navigation with empty Squad, Saved, and Progress tabs.
+1. Expo project setup, fonts, colors, tab navigation with empty Squad and Saved tabs.
 2. Character data file (all 20), first-launch squad assignment, and the Squad screen grid.
 3. Pep talk screen UI with a hard-coded sample response.
 4. Serverless backend function and real AI pep talks.
 5. Voice playback with `expo-speech`.
 6. "I did it!" screen with the AI reaction (auto-play voice).
 7. Saving pep talks and the Saved tab.
-8. Recording wins, streaks, and the Progress tab.
+8. Recording wins and streaks (shown on the "I did it!" screen).
 9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3), haptics, notifications.
 
 ## Working rules
@@ -114,6 +114,7 @@ Not in v1, but planned or worth considering:
 - **User accounts:** sign-in so a user's squad, wins, and saved pep talks sync across devices and survive reinstalling. This would allow true per-person AI limits. When added, upload the data already on the phone at sign-up so nobody loses progress. Until then, keep all stored data in one clearly organized place (e.g. a single `lib/storage.ts` module) so it's easy to sync later. Apple requires in-app account deletion, and Sign in with Apple if any other social sign-in is offered.
 - **Sharing:** "Share this moment" from the victory screen (removed from v1).
 - **Settings screen:** the gear shown in the mockup.
+- **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
 - **AI voices:** replace `expo-speech` with an AI voice service.
 
 ## Decisions
@@ -135,3 +136,4 @@ Not in v1, but planned or worth considering:
 - Backend is a Vercel function in `api/` in this repo.
 - Test device: iPhone with Expo Go.
 - No user accounts in v1: all data stays on the phone (AsyncStorage). This is simpler and faster to build, has no sign-up friction, and keeps data private. The trade-off is that data doesn't survive deleting the app or move to other devices, and per-device AI limits can be dodged, hence the global daily cap. Accounts are listed under Future features.
+- No Progress tab in v1: the tab bar is just Squad and Saved. Wins and streaks are still recorded for the victory screen and unlocks. The Progress tab is listed under Future features.
