@@ -131,7 +131,7 @@ export default function ReactionScreen() {
           </>
         ) : (
           <>
-            <GoldButton label="Try again" onPress={backToPepTalk} />
+            <GoldButton label="Back to Pep Talk" onPress={backToPepTalk} />
             <OutlineButton label="Back to the squad" onPress={backToSquad} />
           </>
         )}
