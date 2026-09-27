@@ -191,10 +191,17 @@ const styles = StyleSheet.create({
   },
   headerText: {
     flex: 1,
+    // Name and role chip sit side by side; the chip drops to the next line if the name is long.
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    columnGap: 10,
+    rowGap: 6,
   },
   name: {
     fontFamily: fonts.heading,
     fontSize: 30,
+    lineHeight: 34, // tight line box so the role chip centers on the letters
     color: colors.text,
     letterSpacing: -0.3,
   },
@@ -204,7 +211,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    marginTop: 6,
+    transform: [{ translateY: 3 }], // optical nudge: lines the chip up with the name's letters
   },
   roleText: {
     fontFamily: fonts.bodyBold,
