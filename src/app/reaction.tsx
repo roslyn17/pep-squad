@@ -10,9 +10,15 @@ import { PlayButton } from '@/components/PlayButton';
 import { getCharacter } from '@/data/characters';
 import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { estimateDurationSeconds, speak, useSpeech } from '@/lib/speak';
+import { currentStreak, recordWin, useWins, winsUntilUnlock } from '@/lib/wins';
 import { colors, fonts, minTouchSize, radius, spacing } from '@/theme';
 
 const REACTION_ID = 'outcome-reaction';
+
+// Reactions already fetched this session, per pep talk and outcome. Going back and forth on
+// the same pep talk shows the same reaction with no new AI request. Only successful replies
+// are kept, so a failed one can be retried.
+const reactionCache = new Map<string, PepTalkResult>();
 
 // Closes this screen and the pep talk underneath it, landing on the Squad tab.
 function backToSquad() {
@@ -27,7 +33,13 @@ function backToPepTalk() {
 
 // Shown after "I did it!" (a celebration) or "I didn't do it" (a kind, no-guilt reaction).
 export default function ReactionScreen() {
-  const params = useLocalSearchParams<{ characterId: string; task: string; outcome: Outcome }>();
+  const params = useLocalSearchParams<{
+    characterId: string;
+    task: string;
+    outcome: Outcome;
+    pepTalkId: string;
+  }>();
+  const pepTalkId = params.pepTalkId ?? '';
   const outcome: Outcome = params.outcome === 'not-done' ? 'not-done' : 'done';
   const character = getCharacter(params.characterId ?? '');
   const task = params.task ?? '';
@@ -37,20 +49,29 @@ export default function ReactionScreen() {
   const [result, setResult] = useState<PepTalkResult | null>(null);
   const [loading, setLoading] = useState(true);
   const mounted = useRef(true);
+  const wins = useWins();
+  const cacheKey = `${pepTalkId}:${outcome}`;
 
   const fetchReaction = useCallback(async () => {
     if (!character || !task) return;
     setLoading(true);
-    const next = await requestPepTalk(character, task, outcome === 'done' ? 'reaction' : 'not-done');
+    const cached = pepTalkId ? reactionCache.get(cacheKey) : undefined;
+    const next =
+      cached ?? (await requestPepTalk(character, task, outcome === 'done' ? 'reaction' : 'not-done'));
+    if (next.status === 'ok' && pepTalkId) reactionCache.set(cacheKey, next);
     if (!mounted.current) return;
     setResult(next);
     setLoading(false);
     // The reaction plays on its own (silent when the phone is on silent).
     if (next.status === 'ok') speak(REACTION_ID, next.text, character);
-  }, [character, task, outcome]);
+  }, [character, task, outcome, pepTalkId, cacheKey]);
 
   useEffect(() => {
     mounted.current = true;
+    // "I did it!" counts as a win, once per pep talk (recordWin ignores repeats).
+    if (outcome === 'done' && character && pepTalkId) {
+      recordWin({ pepTalkId, characterId: character.id, task });
+    }
     fetchReaction();
     return () => {
       mounted.current = false;
@@ -90,7 +111,7 @@ export default function ReactionScreen() {
         </Text>
 
         <View style={styles.avatar}>
-          <CharacterAvatar character={character} size={128} backgroundColor={character.cardColor} />
+          <CharacterAvatar character={character} size={88} backgroundColor={character.cardColor} />
         </View>
 
         <View style={styles.card} accessibilityLiveRegion="polite">
@@ -121,6 +142,8 @@ export default function ReactionScreen() {
             </Pressable>
           )}
         </View>
+
+        {outcome === 'done' && wins && <ProgressTiles totalWins={wins.length} streak={currentStreak(wins)} />}
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
@@ -133,6 +156,33 @@ export default function ReactionScreen() {
           <>
             <GoldButton label="Back to Pep Talk" onPress={backToPepTalk} />
             <OutlineButton label="Back to the squad" onPress={backToSquad} />
+          </>
+        )}
+      </View>
+    </View>
+  );
+}
+
+function ProgressTiles({ totalWins, streak }: { totalWins: number; streak: number }) {
+  const away = winsUntilUnlock(totalWins);
+  return (
+    <View style={styles.tiles}>
+      <View style={styles.tile}>
+        <Text style={styles.tileValue}>
+          {streak} {streak === 1 ? 'day' : 'days'}
+        </Text>
+        <Text style={styles.tileLabel}>Current streak</Text>
+      </View>
+      <View style={styles.tile}>
+        {away === 0 ? (
+          <>
+            <Text style={styles.tileValue}>Unlocked!</Text>
+            <Text style={styles.tileLabel}>You earned a new squad member</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.tileValue}>{away} away</Text>
+            <Text style={styles.tileLabel}>from unlocking a new squad member</Text>
           </>
         )}
       </View>
@@ -193,15 +243,15 @@ const styles = StyleSheet.create({
   },
   task: {
     fontFamily: fonts.heading,
-    fontSize: 34,
-    lineHeight: 40,
+    fontSize: 30,
+    lineHeight: 36,
     color: colors.textOnDark,
     textAlign: 'center',
     marginTop: 8,
   },
   avatar: {
     alignItems: 'center',
-    marginVertical: 28,
+    marginVertical: 18,
   },
   card: {
     backgroundColor: colors.darkRaised,
@@ -244,6 +294,29 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 16,
     color: colors.textOnDarkSecondary,
+  },
+  tiles: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  tile: {
+    flex: 1,
+    backgroundColor: colors.darkRaised,
+    borderRadius: radius.card,
+    padding: 16,
+  },
+  tileValue: {
+    fontFamily: fonts.heading,
+    fontSize: 24,
+    color: colors.gold,
+  },
+  tileLabel: {
+    fontFamily: fonts.body,
+    fontSize: 14,
+    lineHeight: 19,
+    color: colors.textOnDarkSecondary,
+    marginTop: 2,
   },
   retry: {
     alignSelf: 'flex-start',

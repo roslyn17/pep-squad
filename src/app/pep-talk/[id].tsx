@@ -79,7 +79,8 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
       const next = await requestPepTalk(forCharacter, taskForRequest);
       if (requestId === latestRequest.current) {
         setResult(next);
-        setResultId(`pep-talk-${requestId}`);
+        // Unique per pep talk: wins and remembered reactions are tied to it.
+        setResultId(`pep-talk-${Date.now()}-${Math.floor(Math.random() * 1e6)}`);
         setResultTask(taskForRequest);
         setSavedId(null);
       }
@@ -92,7 +93,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
     speech.stop();
     router.push({
       pathname: '/reaction',
-      params: { characterId: character.id, task: resultTask, outcome },
+      params: { characterId: character.id, task: resultTask, outcome, pepTalkId: resultId },
     });
   }
 

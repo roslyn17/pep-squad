@@ -7,6 +7,17 @@ const KEYS = {
   squad: 'pepsquad:v1:squad', // array of character ids
   deviceId: 'pepsquad:v1:deviceId', // anonymous id for the backend's per-phone daily limit
   saved: 'pepsquad:v1:saved', // array of SavedPepTalk, newest first
+  wins: 'pepsquad:v1:wins', // array of Win, oldest first
+};
+
+export type Win = {
+  /** The pep talk this win came from. One win per pep talk. */
+  pepTalkId: string;
+  characterId: string;
+  task: string;
+  /** The phone's local date when the win happened, e.g. "2026-09-27". Used for streaks. */
+  day: string;
+  at: string; // ISO timestamp
 };
 
 export type SavedPepTalk = {
@@ -54,4 +65,12 @@ export async function loadSavedPepTalks(): Promise<SavedPepTalk[]> {
 
 export function writeSavedPepTalks(items: SavedPepTalk[]): Promise<void> {
   return writeJson(KEYS.saved, items);
+}
+
+export async function loadWins(): Promise<Win[]> {
+  return (await readJson<Win[]>(KEYS.wins)) ?? [];
+}
+
+export function writeWins(wins: Win[]): Promise<void> {
+  return writeJson(KEYS.wins, wins);
 }

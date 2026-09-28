@@ -24,7 +24,7 @@ The tone is playful. The characters should be funny first and motivating second.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it's replaced by "I did it!" and "I didn't do it", and the pep talk plus Again / Save / Swap appear.
    - Tasks are capped at 120 characters.
 3. **Reaction screen (I did it! / I didn't do it):** one full-screen dark page (`src/app/reaction.tsx`) for both outcomes.
-   - **I did it!:** with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), current streak and progress toward the next unlock (added in step 8), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk.
+   - **I did it!:** with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), two tiles below the reaction (current streak, and "X away from unlocking a new squad member", which says "Unlocked!" when a multiple of 10 is reached), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk.
    - **I didn't do it:** "Not this time" instead of "Mission complete", a kind, no-guilt reaction in character (encourages a tiny first step next time), a gold "Back to Pep Talk" button and "Back to the squad". It doesn't count as a win and doesn't break the streak by itself; only a day with no wins does. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, full text, play button), newest first, with filter chips ("All" plus each character that has saved pep talks). Playing a saved pep talk reads the stored text; it never calls the AI. Press and hold a card to remove it (with a confirmation).
 
@@ -95,7 +95,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 5. ✅ Voice playback with `expo-speech`.
 6. ✅ "I did it!" screen with the AI reaction (auto-play voice).
 7. ✅ Saving pep talks and the Saved tab.
-8. Recording wins and streaks (shown on the "I did it!" screen).
+8. ✅ Recording wins and streaks (shown on the "I did it!" screen).
    - Remember reactions per pep talk: the first "I did it!" / "I didn't do it" reaction for a pep talk is kept, so going back and forth shows the same reaction instantly with no new AI request. A new pep talk (Again, Swap, new task) resets them.
    - The same pep talk can only count as one win, no matter how many times "I did it!" is tapped.
 9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3), haptics, notifications.
@@ -180,3 +180,6 @@ Not in v1, but planned or worth considering:
 - The play button double-checks with iOS that speech has really finished before switching back to play, because iOS can report "done" early when one line is cut off and another starts.
 - The backend strips asterisks from AI replies (they'd be read aloud or look like formatting).
 - Development builds get a higher per-device limit (100/day) for testing: the app sends `EXPO_PUBLIC_DEV_LIMIT_KEY` from `.env.development.local` (on the developer's Mac only, git-ignored, only loaded in development) and the backend compares it to the `DEV_LIMIT_KEY` Secret in Vercel. Real users stay at 20, and the 100/day global cap still applies to everyone. To test the real 20 limit, temporarily rename `.env.development.local` and restart the dev server.
+- Wins live in `src/lib/wins.ts` (stored on the phone). Each pep talk has a unique id; a win is recorded the first time "I did it!" is tapped for it, and repeats are ignored. Streak math: consecutive local days with a win; a streak through yesterday still shows until today ends. Unit-tested edge cases (month boundaries, gaps, same-day wins).
+- Reactions are remembered in memory for the app session (per pep talk and outcome), so revisiting shows the same reaction with no new AI request. Closing the app forgets them (wins stay). Failed reactions aren't remembered, so they can be retried.
+- The reaction screen uses a smaller character circle (88) so the streak/unlock tiles fit above the buttons without scrolling.
