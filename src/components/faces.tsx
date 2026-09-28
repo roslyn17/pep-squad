@@ -34,10 +34,14 @@ function SergeantStone() {
 function GrandmaJune() {
   return (
     <G>
-      {/* Hair bun, then face, then gray hair over the top */}
+      {/* Hair bun, then face, then gray hair */}
       <Circle cx={50} cy={17} r={10} fill="#D8D4CE" />
       <Circle cx={50} cy={55} r={31} fill={SKIN_LIGHT} />
-      <Path d="M20 50 C22 30 78 30 80 50 C70 40 30 40 20 50 Z" fill="#D8D4CE" />
+      {/* Hair covers the whole top of the head, down to a soft wave over the forehead */}
+      <Path
+        d="M18 56 A32 32 0 0 1 82 56 C77 47 68 42 58 44 C54 41 46 41 42 44 C32 42 23 47 18 56 Z"
+        fill="#D8D4CE"
+      />
       {/* Round glasses */}
       <Circle cx={39} cy={55} r={8} {...line} strokeWidth={4.5} />
       <Circle cx={61} cy={55} r={8} {...line} strokeWidth={4.5} />
