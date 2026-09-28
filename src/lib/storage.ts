@@ -25,7 +25,7 @@ export type CountedPepTalk = {
   /** The task, lowercased and trimmed, so "Gym" and "gym " match. */
   task: string;
   characterId: string;
-  /** The phone's local date, e.g. "2026-09-27". The same task counts once per day. */
+  /** The phone's local date, e.g. "2026-09-27". */
   day: string;
   at: string; // ISO timestamp
 };

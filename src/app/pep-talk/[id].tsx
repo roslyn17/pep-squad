@@ -64,6 +64,9 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   // Ignores a slow response if a newer request (Again or Swap) was started after it.
   const latestRequest = useRef(0);
   const scrollRef = useRef<ScrollView>(null);
+  // The task last counted toward unlocks on this visit. Again/Swap on the same task don't count
+  // again; a new "Pep me up!" (or a changed task) does.
+  const countedTask = useRef<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
   const trimmedTask = task.trim();
@@ -85,7 +88,11 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
         // Unique per pep talk: wins and remembered reactions are tied to it.
         setResultId(`pep-talk-${Date.now()}-${Math.floor(Math.random() * 1e6)}`);
         setResultTask(taskForRequest);
-        if (next.status === 'ok') countPepTalk(taskForRequest, forCharacter.id);
+        const normalized = taskForRequest.toLowerCase().replace(/\s+/g, ' ');
+        if (next.status === 'ok' && countedTask.current !== normalized) {
+          countedTask.current = normalized;
+          countPepTalk(taskForRequest, forCharacter.id);
+        }
         setSavedId(null);
       }
     } finally {

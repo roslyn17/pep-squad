@@ -39,7 +39,7 @@ All character data lives in ONE file (`src/data/characters.ts`) so adding or twe
 - The bank has 20 characters total. Each character has a tone tag: gentle, loud, chaotic, or deadpan.
 - On first launch, the app randomly assigns 5 starting characters, with at least one of each tone. Store the squad on the device (still no accounts in v1).
 - Every 20 pep talks, the user unlocks a new character by choosing 1 of 3 random characters they don't have yet. The 2 they don't pick go back into the pool.
-- What counts: each successful pep talk, except the same task again on the same day (so Again/Swap on the same task, or leaving and asking again, don't add up). Changing the task and tapping Again counts. Failed or limit-reached replies don't count. Tasks are compared ignoring case and extra spaces. See `src/lib/unlocks.ts`.
+- What counts: every successful "Pep me up!", including the same task again later (e.g. going to the gym twice in a day). Again and Swap on the same task don't count; changing the task and tapping Again does. Failed or limit-reached replies don't count. Tasks are compared ignoring case and extra spaces. Counting is decided on the pep talk screen (`src/app/pep-talk/[id].tsx`); totals live in `src/lib/unlocks.ts`.
 
 ### Character bank
 

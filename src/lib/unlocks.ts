@@ -1,6 +1,6 @@
-// Progress toward unlocking a new squad member: every PEP_TALKS_PER_UNLOCK unique pep talks.
-// A pep talk counts unless the same task already counted today, so tapping Again or Swap on
-// the same task (or leaving and asking again) doesn't add up.
+// Progress toward unlocking a new squad member: every PEP_TALKS_PER_UNLOCK pep talks.
+// Each "Pep me up!" counts (even the same task again later). Again and Swap on the same task
+// don't; the pep talk screen decides that and only calls countPepTalk for new ones.
 
 import { useEffect, useState } from 'react';
 
@@ -34,12 +34,11 @@ function load(): Promise<CountedPepTalk[]> {
 
 const normalize = (task: string) => task.trim().toLowerCase().replace(/\s+/g, ' ');
 
-/** Counts a successful pep talk toward the next unlock, unless this task already counted today. */
+/** Counts a pep talk toward the next unlock. */
 export async function countPepTalk(task: string, characterId: string): Promise<void> {
   const current = await load();
   const now = new Date();
   const entry = { task: normalize(task), characterId, day: localDay(now), at: now.toISOString() };
-  if (current.some((c) => c.task === entry.task && c.day === entry.day)) return;
   const next = [...current, entry];
   items = next;
   listeners.forEach((listener) => listener(next));
