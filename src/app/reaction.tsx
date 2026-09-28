@@ -10,7 +10,8 @@ import { PlayButton } from '@/components/PlayButton';
 import { getCharacter } from '@/data/characters';
 import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { estimateDurationSeconds, speak, useSpeech } from '@/lib/speak';
-import { currentStreak, recordWin, useWins, winsUntilUnlock } from '@/lib/wins';
+import { pepTalksUntilUnlock, useCountedPepTalks } from '@/lib/unlocks';
+import { currentStreak, recordWin, useWins } from '@/lib/wins';
 import { colors, fonts, minTouchSize, radius, spacing } from '@/theme';
 
 const REACTION_ID = 'outcome-reaction';
@@ -50,6 +51,7 @@ export default function ReactionScreen() {
   const [loading, setLoading] = useState(true);
   const mounted = useRef(true);
   const wins = useWins();
+  const pepTalkCount = useCountedPepTalks();
   const cacheKey = `${pepTalkId}:${outcome}`;
 
   const fetchReaction = useCallback(async () => {
@@ -143,7 +145,9 @@ export default function ReactionScreen() {
           )}
         </View>
 
-        {outcome === 'done' && wins && <ProgressTiles totalWins={wins.length} streak={currentStreak(wins)} />}
+        {outcome === 'done' && wins && pepTalkCount !== null && (
+          <ProgressTiles pepTalkCount={pepTalkCount} streak={currentStreak(wins)} />
+        )}
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
@@ -163,8 +167,8 @@ export default function ReactionScreen() {
   );
 }
 
-function ProgressTiles({ totalWins, streak }: { totalWins: number; streak: number }) {
-  const away = winsUntilUnlock(totalWins);
+function ProgressTiles({ pepTalkCount, streak }: { pepTalkCount: number; streak: number }) {
+  const away = pepTalksUntilUnlock(pepTalkCount);
   return (
     <View style={styles.tiles}>
       <View style={styles.tile}>
@@ -181,8 +185,10 @@ function ProgressTiles({ totalWins, streak }: { totalWins: number; streak: numbe
           </>
         ) : (
           <>
-            <Text style={styles.tileValue}>{away} away</Text>
-            <Text style={styles.tileLabel}>from unlocking a new squad member</Text>
+            <Text style={styles.tileValue}>{away} more</Text>
+            <Text style={styles.tileLabel}>
+              {away === 1 ? 'pep talk' : 'pep talks'} to unlock a new squad member
+            </Text>
           </>
         )}
       </View>

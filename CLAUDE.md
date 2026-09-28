@@ -24,7 +24,7 @@ The tone is playful. The characters should be funny first and motivating second.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it's replaced by "I did it!" and "I didn't do it", and the pep talk plus Again / Save / Swap appear.
    - Tasks are capped at 120 characters.
 3. **Reaction screen (I did it! / I didn't do it):** one full-screen dark page (`src/app/reaction.tsx`) for both outcomes.
-   - **I did it!:** with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), two tiles below the reaction (current streak, and "X away from unlocking a new squad member", which says "Unlocked!" when a multiple of 10 is reached), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk.
+   - **I did it!:** with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), two tiles below the reaction (current streak, and "X more pep talks to unlock a new squad member", which says "Unlocked!" when a multiple of 20 is reached), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk.
    - **I didn't do it:** "Not this time" instead of "Mission complete", a kind, no-guilt reaction in character (encourages a tiny first step next time), a gold "Back to Pep Talk" button and "Back to the squad". It doesn't count as a win and doesn't break the streak by itself; only a day with no wins does. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, full text, play button), newest first, with filter chips ("All" plus each character that has saved pep talks). Playing a saved pep talk reads the stored text; it never calls the AI. Press and hold a card to remove it (with a confirmation).
 
@@ -38,7 +38,8 @@ All character data lives in ONE file (`src/data/characters.ts`) so adding or twe
 
 - The bank has 20 characters total. Each character has a tone tag: gentle, loud, chaotic, or deadpan.
 - On first launch, the app randomly assigns 5 starting characters, with at least one of each tone. Store the squad on the device (still no accounts in v1).
-- Every 10 wins, the user unlocks a new character by choosing 1 of 3 random characters they don't have yet. The 2 they don't pick go back into the pool.
+- Every 20 pep talks, the user unlocks a new character by choosing 1 of 3 random characters they don't have yet. The 2 they don't pick go back into the pool.
+- What counts: each successful pep talk, except the same task again on the same day (so Again/Swap on the same task, or leaving and asking again, don't add up). Changing the task and tapping Again counts. Failed or limit-reached replies don't count. Tasks are compared ignoring case and extra spaces. See `src/lib/unlocks.ts`.
 
 ### Character bank
 
@@ -98,7 +99,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 8. ✅ Recording wins and streaks (shown on the "I did it!" screen).
    - Remember reactions per pep talk: the first "I did it!" / "I didn't do it" reaction for a pep talk is kept, so going back and forth shows the same reaction instantly with no new AI request. A new pep talk (Again, Swap, new task) resets them.
    - The same pep talk can only count as one win, no matter how many times "I did it!" is tapped.
-9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3), haptics, notifications.
+9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3, every 20 pep talks), haptics, notifications.
 
 ## Working rules
 
@@ -140,7 +141,7 @@ Not in v1, but planned or worth considering:
 - "Swap" button label kept for now; may rename later if it confuses people.
 - 20 AI requests per day limit to keep costs under about $1/month.
 - Bank of 20 characters, each tagged gentle, loud, chaotic, or deadpan. Each user starts with 5 random characters, including at least one of each tone.
-- One unlock every 10 wins: the user picks 1 of 3 random characters they don't have yet; the other 2 go back into the pool.
+- One unlock every 20 unique pep talks (changed from every 10 wins, to reward using the squad and make unlocks harder to earn): the user picks 1 of 3 random characters they don't have yet; the other 2 go back into the pool.
 - No sharing in v1: "Share this moment" was removed from the spec and the mockup.
 - No settings screen in v1, even though the mockup shows a settings gear.
 - When the AI fails, show an honest in-character failure line, not a pre-written pep talk.

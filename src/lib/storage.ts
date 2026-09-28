@@ -8,6 +8,17 @@ const KEYS = {
   deviceId: 'pepsquad:v1:deviceId', // anonymous id for the backend's per-phone daily limit
   saved: 'pepsquad:v1:saved', // array of SavedPepTalk, newest first
   wins: 'pepsquad:v1:wins', // array of Win, oldest first
+  counted: 'pepsquad:v1:countedPepTalks', // array of CountedPepTalk, oldest first
+};
+
+/** A pep talk that counts toward unlocking a new squad member. */
+export type CountedPepTalk = {
+  /** The task, lowercased and trimmed, so "Gym" and "gym " match. */
+  task: string;
+  characterId: string;
+  /** The phone's local date, e.g. "2026-09-27". The same task counts once per day. */
+  day: string;
+  at: string; // ISO timestamp
 };
 
 export type Win = {
@@ -73,4 +84,12 @@ export async function loadWins(): Promise<Win[]> {
 
 export function writeWins(wins: Win[]): Promise<void> {
   return writeJson(KEYS.wins, wins);
+}
+
+export async function loadCountedPepTalks(): Promise<CountedPepTalk[]> {
+  return (await readJson<CountedPepTalk[]>(KEYS.counted)) ?? [];
+}
+
+export function writeCountedPepTalks(items: CountedPepTalk[]): Promise<void> {
+  return writeJson(KEYS.counted, items);
 }

@@ -1,12 +1,9 @@
-// Wins ("I did it!"), streaks, and progress toward the next unlock. Wins are kept on the
-// phone; every screen that shows them updates when a new win is recorded.
+// Wins ("I did it!") and streaks. Wins are kept on the phone; every screen that shows them
+// updates when a new win is recorded. (Unlocks are based on pep talks: see unlocks.ts.)
 
 import { useEffect, useState } from 'react';
 
 import { loadWins, Win, writeWins } from '@/lib/storage';
-
-/** A new squad member unlocks every this-many wins (step 9 adds choosing one). */
-export const WINS_PER_UNLOCK = 10;
 
 let wins: Win[] | null = null; // null until loaded from the phone
 let loading: Promise<Win[]> | null = null;
@@ -57,12 +54,6 @@ export function currentStreak(all: Win[], today = new Date()): number {
     cursor.setDate(cursor.getDate() - 1);
   }
   return streak;
-}
-
-/** Wins still needed for the next unlock (0 = an unlock was just earned). */
-export function winsUntilUnlock(totalWins: number): number {
-  const remainder = totalWins % WINS_PER_UNLOCK;
-  return totalWins > 0 && remainder === 0 ? 0 : WINS_PER_UNLOCK - remainder;
 }
 
 /** All wins, oldest first. `null` while loading. */

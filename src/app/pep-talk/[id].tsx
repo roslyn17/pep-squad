@@ -13,6 +13,7 @@ import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { removeSavedPepTalk, savePepTalk, useSavedPepTalks } from '@/lib/saved';
 import { useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
+import { countPepTalk } from '@/lib/unlocks';
 import { colors, fonts, radius, spacing } from '@/theme';
 
 const MAX_TASK_LENGTH = 120;
@@ -82,6 +83,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
         // Unique per pep talk: wins and remembered reactions are tied to it.
         setResultId(`pep-talk-${Date.now()}-${Math.floor(Math.random() * 1e6)}`);
         setResultTask(taskForRequest);
+        if (next.status === 'ok') countPepTalk(taskForRequest, forCharacter.id);
         setSavedId(null);
       }
     } finally {
