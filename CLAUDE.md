@@ -28,7 +28,7 @@ The tone is playful. The characters should be funny first and motivating second.
    - **I didn't do it:** "Not this time" instead of "Mission complete", a kind, no-guilt reaction in character (encourages a tiny first step next time), a gold "Back to Pep Talk" button and "Back to the squad". It doesn't count as a win and doesn't break the streak by itself; only a day with no wins does. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, full text, play button), newest first, with filter chips ("All" plus each character that has saved pep talks). Playing a saved pep talk reads the stored text; it never calls the AI. Press and hold a card to remove it (with a confirmation).
 
-Wins and streaks are still recorded in v1 because the "I did it!" screen shows the streak and unlock progress, and unlocks happen every 10 wins. A streak is the number of consecutive days with at least one win, using the phone's local time.
+Wins and streaks are still recorded in v1 because the "I did it!" screen shows the streak. Unlock progress is based on pep talks, not wins (see Characters). A streak is the number of consecutive days with at least one win, using the phone's local time.
 
 ## Characters
 
