@@ -130,6 +130,9 @@ function MrWhiskers() {
 function LadyAshworth() {
   return (
     <G>
+      {/* Hair bun, tucked behind the head */}
+      <Ellipse cx={50} cy={24} rx={12} ry={8} fill="#B3A8C8" />
+      <Path d="M40 24 Q50 30 60 24" stroke="#9A8FB2" strokeWidth={2} fill="none" />
       {/* Ghost body with a wavy hem */}
       <Path
         d="M20 50 C20 22 80 22 80 50 L80 84 Q74 76 68 84 Q62 92 56 84 Q50 76 44 84 Q38 92 32 84 Q26 76 20 84 Z"
@@ -137,9 +140,11 @@ function LadyAshworth() {
         stroke="#C9C0D8"
         strokeWidth={2}
       />
-      {/* Victorian hair bun and a tiny lace cap */}
-      <Circle cx={50} cy={16} r={8} fill="#CFC8DA" />
-      <Path d="M30 36 Q50 22 70 36" {...line} stroke="#CFC8DA" strokeWidth={6} />
+      {/* Victorian hair, center-parted and swept to each side */}
+      <Path
+        d="M21 48 C21 23 79 23 79 48 C73 40 61 37 52 40 L50 31 L48 40 C39 37 27 40 21 48 Z"
+        fill="#B3A8C8"
+      />
       {/* Weary, half-lidded eyes and a prim little mouth */}
       <Path d="M34 50 L46 50" {...line} strokeWidth={4} />
       <Path d="M54 50 L66 50" {...line} strokeWidth={4} />
@@ -255,7 +260,8 @@ function KevinFromAccounting() {
       <Path d="M46 80 L54 80 L56 90 L44 90 Z" fill="#3E6BA8" />
       <Circle cx={50} cy={48} r={29} fill={SKIN_LIGHT} />
       {/* Neat side-parted hair */}
-      <Path d="M21 44 C20 18 80 16 79 42 C74 30 60 26 44 30 C34 32 26 36 21 44 Z" fill="#6B4A32" />
+      <Path d="M20 47 A30 30 0 0 1 80 44 C74 34 62 30 48 34 C38 34 28 38 20 47 Z" fill="#6B4A32" />
+      <Path d="M40 21 Q43 28 47 33" stroke="#8C6A4E" strokeWidth={2.5} strokeLinecap="round" fill="none" />
       {/* Rectangular glasses */}
       <Rect x={29} y={44} width={17} height={12} rx={3} {...line} strokeWidth={3.5} />
       <Rect x={54} y={44} width={17} height={12} rx={3} {...line} strokeWidth={3.5} />
