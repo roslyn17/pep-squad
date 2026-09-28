@@ -83,7 +83,7 @@ The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See
 - Accent: tomato orange `#C2410C` (primary buttons, active tab). Gold `#F4C56A` on dark surfaces.
 - Dark surfaces (victory screen, featured card): `#1F1B16`.
 - Rounded cards (about 20px radius), generous padding, touch targets at least 44px.
-- Characters use a placeholder icon (from MaterialCommunityIcons) in a soft circle until drawn faces exist. All avatars go through `src/components/CharacterAvatar.tsx`, so swapping in faces later only touches that file.
+- Characters are simple drawn faces (vector shapes in `src/components/faces.tsx`, rendered with `react-native-svg`) in the mockup's style: flat shapes, no outlines, thick rounded dark features, one signature prop each, and a range of skin tones. Each face is its own circle, with no background behind it. Faces are drawn on a 100x100 canvas, and only the middle 84x84 (x 8-92, y 6-90) is shown. All avatars go through `src/components/CharacterAvatar.tsx`; a character without a face falls back to its `icon`.
 
 ## Build order
 
@@ -128,7 +128,6 @@ Not in v1, but planned or worth considering:
   - Safety: characters stay kind, so the AI rules already block mean messages; sent pep talks count against the sender's daily AI limit.
 - **Settings screen:** the gear shown in the mockup.
 - **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
-- **Drawn character faces:** replace the placeholder icons with simple drawn faces in the mockup's style.
 - **Notifications:** e.g. an optional daily reminder from a squad member at a time the user picks. Skipped for v1.
 - **AI voices (planned for a future version):** replace the built-in iPhone voices with an AI voice service (e.g. ElevenLabs or OpenAI text-to-speech) so characters sound genuinely excited, deadpan, or dramatic instead of monotone. Plan:
   - Generate audio in the backend (like the AI text), so the voice service's API key stays server-side, and give each character a matching AI voice.
@@ -194,3 +193,4 @@ Not in v1, but planned or worth considering:
 - Known limitation: the global daily cap can still be used up by someone who keeps changing their anonymous device id. That's the trade-off of no accounts; User accounts (Future features) would fix it.
 - Speech uses its own iOS audio session (`useApplicationAudioSession: false` in `src/lib/speak.ts`). With the app's session (the default), speech was completely silent on a real iPhone in Expo Go even with sound on; the Simulator didn't show the problem. Confirmed on a real iPhone: audible, per-character voices work, and silent mode still mutes it.
 - Reactions don't auto-play (changed after real-iPhone testing); they play only when the user taps play, same as pep talks.
+- Drawn faces replaced the placeholder icons for all 20 characters. The `icon` field stays as a fallback for any future character added before its face is drawn. Richer art (an AI image tool like Recraft, or an illustrator) could replace `faces.tsx` later without touching screens.
