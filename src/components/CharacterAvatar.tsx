@@ -1,6 +1,8 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { StyleSheet, View } from 'react-native';
+import Svg from 'react-native-svg';
 
+import { FACES } from '@/components/faces';
 import { Character } from '@/data/characters';
 import { colors } from '@/theme';
 
@@ -11,10 +13,24 @@ type Props = {
   backgroundColor?: string;
 };
 
-// Placeholder avatar: the character's icon in a soft circle. Swap this for drawn faces later;
-// every screen uses this component, so that's the only place that will need to change.
-// (Icons rather than emoji because emoji don't render in the iOS Simulator we test in.)
+// Every screen draws characters through this component. Characters with a drawn face
+// (src/components/faces.tsx) use it; the rest show their placeholder icon.
 export function CharacterAvatar({ character, size = 56, backgroundColor }: Props) {
+  const Face = FACES[character.id];
+  if (Face) {
+    // Drawn faces are their own circle (like the mockup), so no background behind them.
+    return (
+      <View
+        style={{ width: size, height: size }}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <Svg width={size} height={size} viewBox="8 6 84 84">
+          <Face />
+        </Svg>
+      </View>
+    );
+  }
   return (
     <View
       style={[
