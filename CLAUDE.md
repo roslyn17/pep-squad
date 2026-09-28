@@ -83,7 +83,7 @@ The mockup is `docs/PepSquadMock.pdf`. Where it differs from this file (the "See
 - Accent: tomato orange `#C2410C` (primary buttons, active tab). Gold `#F4C56A` on dark surfaces.
 - Dark surfaces (victory screen, featured card): `#1F1B16`.
 - Rounded cards (about 20px radius), generous padding, touch targets at least 44px.
-- Characters are simple drawn faces (vector shapes in `src/components/faces.tsx`, rendered with `react-native-svg`) in the mockup's style: flat shapes, no outlines, thick rounded dark features, one signature prop each, and a range of skin tones. Each face is its own circle, with no background behind it. Faces are drawn on a 100x100 canvas, and only the middle 84x84 (x 8-92, y 6-90) is shown. All avatars go through `src/components/CharacterAvatar.tsx`; a character without a face falls back to its `icon`.
+- Characters are simple drawn faces (vector shapes in `src/components/faces.tsx`, rendered with `react-native-svg`) in the mockup's style: flat shapes, no outlines, thick rounded dark features, one signature prop each, and a range of skin tones. On light cards each face is its own circle, with no background behind it. Where a screen passes `backgroundColor` (the dark featured card, reaction and unlock screens, and the Saved tab), a soft circle in the character's card color sits behind the face, so dark hair and hats stay visible on dark backgrounds. Faces are drawn on a 100x100 canvas, and only the middle 84x84 (x 8-92, y 6-90) is shown. All avatars go through `src/components/CharacterAvatar.tsx`; a character without a face falls back to its `icon`.
 
 ## Build order
 

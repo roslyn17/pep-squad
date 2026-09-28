@@ -18,14 +18,20 @@ type Props = {
 export function CharacterAvatar({ character, size = 56, backgroundColor }: Props) {
   const Face = FACES[character.id];
   if (Face) {
-    // Drawn faces are their own circle (like the mockup), so no background behind them.
+    // On light cards, drawn faces are their own circle (like the mockup). When a background
+    // color is given (dark screens like the featured card), a soft circle sits behind the face
+    // so dark hair and hats don't disappear into the background.
+    const faceSize = backgroundColor ? size * 0.86 : size;
     return (
       <View
-        style={{ width: size, height: size }}
+        style={[
+          { width: size, height: size, alignItems: 'center', justifyContent: 'center' },
+          backgroundColor ? { backgroundColor, borderRadius: size / 2 } : null,
+        ]}
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        <Svg width={size} height={size} viewBox="8 6 84 84">
+        <Svg width={faceSize} height={faceSize} viewBox="8 6 84 84">
           <Face />
         </Svg>
       </View>

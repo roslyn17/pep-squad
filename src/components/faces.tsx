@@ -404,15 +404,14 @@ function CommanderNova() {
 function ChefAntoine() {
   return (
     <G>
-      {/* Tall puffy chef's hat */}
+      <Circle cx={50} cy={60} r={27} fill={SKIN_LIGHT} />
+      {/* Tall puffy chef's hat, drawn over the top of the head */}
       <Path
         d="M29 42 L29 30 C18 30 18 12 32 15 C34 5 66 5 68 15 C82 12 82 30 71 30 L71 42 Z"
         fill="#FFFFFF"
         stroke="#E0D8CC"
         strokeWidth={2}
       />
-      <Circle cx={50} cy={60} r={27} fill={SKIN_LIGHT} />
-      <Rect x={26} y={36} width={48} height={8} rx={3} fill="#E6E0D6" />
       {/* Happy closed eyes, rosy cheeks */}
       <Path d="M34 56 Q39 51 44 56 M56 56 Q61 51 66 56" {...line} strokeWidth={4} />
       <Circle cx={32} cy={66} r={4} fill="#F09A9A" opacity={0.7} />
