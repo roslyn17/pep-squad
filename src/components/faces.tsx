@@ -109,10 +109,10 @@ function MrWhiskers() {
   return (
     <G>
       {/* Ears, then head */}
-      <Polygon points="18,40 24,10 44,28" fill="#8F8983" />
-      <Polygon points="82,40 76,10 56,28" fill="#8F8983" />
-      <Polygon points="24,32 27,18 36,28" fill="#E8B4B0" />
-      <Polygon points="76,32 73,18 64,28" fill="#E8B4B0" />
+      <Polygon points="22,42 22,12 42,26" fill="#8F8983" />
+      <Polygon points="78,42 78,12 58,26" fill="#8F8983" />
+      <Polygon points="25,34 25,19 35,26" fill="#E8B4B0" />
+      <Polygon points="75,34 75,19 65,26" fill="#E8B4B0" />
       <Circle cx={50} cy={54} r={32} fill="#A7A29C" />
       {/* Half-closed, unimpressed eyes */}
       <Path d="M32 52 L46 52" {...line} />
@@ -154,8 +154,8 @@ function CaptainBarnacle() {
   return (
     <G>
       <Circle cx={50} cy={56} r={30} fill={SKIN_TAN} />
-      {/* Bushy beard */}
-      <Path d="M22 62 C24 86 76 86 78 62 C70 74 30 74 22 62 Z" fill="#6B3E22" />
+      {/* Full red pirate beard covering the lower face */}
+      <Path d="M19.6 60 A30.5 30.5 0 0 0 80.4 60 C72 66 62 64 50 66 C38 64 28 66 19.6 60 Z" fill="#B5562E" />
       {/* Tricorn hat with a skull-and-crossbones mark */}
       <Path d="M12 38 Q50 4 88 38 Q50 28 12 38 Z" fill="#2B2521" />
       <Circle cx={50} cy={24} r={4} fill={WHITE} />
@@ -164,7 +164,7 @@ function CaptainBarnacle() {
       <Path d="M24 44 L76 58" stroke={INK} strokeWidth={3} />
       <Circle cx={61} cy={54} r={8} fill={INK} />
       <Circle cx={39} cy={54} r={3.6} fill={INK} />
-      <Path d="M40 68 Q50 76 60 68" {...line} />
+      <Path d="M42 74 Q50 80 58 74" {...line} strokeWidth={4} />
     </G>
   );
 }
@@ -291,7 +291,6 @@ function Gerald() {
       {/* Leaves sprouting from the top */}
       <Path d="M50 40 C38 36 28 22 36 10 C46 16 52 28 50 40 Z" fill="#5FA05A" />
       <Path d="M50 40 C62 34 74 24 70 12 C58 16 50 28 50 40 Z" fill="#78B870" />
-      <Path d="M50 40 C44 32 30 32 22 38 C30 44 42 44 50 40 Z" fill="#4E8C4A" />
       {/* Terracotta pot with a face */}
       <Rect x={20} y={38} width={60} height={10} rx={3} fill="#B8603E" />
       <Path d="M24 46 L76 46 L70 86 L30 86 Z" fill="#D4774E" />
@@ -329,16 +328,16 @@ function CoachDale() {
       <Circle cx={50} cy={56} r={30} fill={SKIN_DEEP} />
       {/* Red cap with brim */}
       <Path d="M20 44 C20 16 80 16 80 44 Z" fill="#D2443A" />
-      <Rect x={44} y={40} width={44} height={7} rx={3.5} fill="#B03228" />
+      <Rect x={50} y={39} width={36} height={7} rx={3.5} fill="#B03228" />
       {/* Headset with a mic */}
       <Rect x={16} y={48} width={8} height={16} rx={4} fill={INK} />
       <Path d="M22 62 Q28 76 40 76" stroke={INK} strokeWidth={3} fill="none" />
       <Circle cx={41} cy={76} r={3} fill={INK} />
       {/* Excited eyes and a big shouting mouth */}
-      <Path d="M32 49 L44 47 M56 47 L68 49" {...line} strokeWidth={4} />
-      <Eyes y={56} />
-      <Path d="M42 66 L58 66 Q58 80 50 80 Q42 80 42 66 Z" fill={INK} />
-      <Path d="M45 74 Q50 71 55 74 Q55 79 50 79 Q45 79 45 74 Z" fill="#E88A8A" />
+      <Path d="M32 53 L44 51 M56 51 L68 53" {...line} strokeWidth={4} />
+      <Eyes y={59} />
+      <Path d="M42 68 L58 68 Q58 82 50 82 Q42 82 42 68 Z" fill={INK} />
+      <Path d="M45 76 Q50 73 55 76 Q55 81 50 81 Q45 81 45 76 Z" fill="#E88A8A" />
     </G>
   );
 }
@@ -406,10 +405,12 @@ function ChefAntoine() {
   return (
     <G>
       {/* Tall puffy chef's hat */}
-      <Circle cx={35} cy={26} r={11} fill={WHITE} />
-      <Circle cx={50} cy={21} r={12} fill={WHITE} />
-      <Circle cx={65} cy={26} r={11} fill={WHITE} />
-      <Rect x={28} y={26} width={44} height={14} fill={WHITE} />
+      <Path
+        d="M29 42 L29 30 C18 30 18 12 32 15 C34 5 66 5 68 15 C82 12 82 30 71 30 L71 42 Z"
+        fill="#FFFFFF"
+        stroke="#E0D8CC"
+        strokeWidth={2}
+      />
       <Circle cx={50} cy={60} r={27} fill={SKIN_LIGHT} />
       <Rect x={26} y={36} width={48} height={8} rx={3} fill="#E6E0D6" />
       {/* Happy closed eyes, rosy cheeks */}
