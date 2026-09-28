@@ -94,6 +94,9 @@ export async function speak(id: string, text: string, character: Character) {
     pitch: character.voice.pitch,
     rate: character.voice.rate,
     ...(voice ? { voice } : { language: 'en-US' }),
+    // Let iOS give speech its own audio session. Using the app's session (the default) was
+    // silent on a real iPhone in Expo Go even with sound on.
+    useApplicationAudioSession: false,
     onDone: finished,
     onStopped: finished,
     onError: finished,

@@ -9,7 +9,7 @@ import { CharacterAvatar } from '@/components/CharacterAvatar';
 import { PlayButton } from '@/components/PlayButton';
 import { characters, getCharacter } from '@/data/characters';
 import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
-import { estimateDurationSeconds, speak, useSpeech } from '@/lib/speak';
+import { estimateDurationSeconds, useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
 import { PEP_TALKS_PER_UNLOCK, useCountedPepTalks, useUnlockReady } from '@/lib/unlocks';
 import { currentStreak, recordWin, useWins } from '@/lib/wins';
@@ -71,8 +71,7 @@ export default function ReactionScreen() {
     if (!mounted.current) return;
     setResult(next);
     setLoading(false);
-    // The reaction plays on its own (silent when the phone is on silent).
-    if (next.status === 'ok') speak(REACTION_ID, next.text, character);
+    // Like pep talks, reactions only play when the user taps play.
   }, [character, task, outcome, pepTalkId, cacheKey]);
 
   useEffect(() => {

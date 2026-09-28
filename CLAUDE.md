@@ -24,7 +24,7 @@ The tone is playful. The characters should be funny first and motivating second.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it's replaced by "I did it!" and "I didn't do it", and the pep talk plus Again / Save / Swap appear.
    - Tasks are capped at 120 characters.
 3. **Reaction screen (I did it! / I didn't do it):** one full-screen dark page (`src/app/reaction.tsx`) for both outcomes.
-   - **I did it!:** with "Mission complete", the task as the title, the character, their reaction (with play button, auto-plays), two tiles below the reaction (current streak, and "X more pep talks to unlock a new squad member", which says "Unlocked!" when a multiple of 20 is reached), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk.
+   - **I did it!:** with "Mission complete", the task as the title, the character, their reaction (with play button; plays only when tapped), two tiles below the reaction (current streak, and "X more pep talks to unlock a new squad member", which says "Unlocked!" when a multiple of 20 is reached), a gold "Back to the squad" button (returns to the Squad tab), and "See my pep talk again" (returns to the pep talk, which is still there). The close X also returns to the pep talk.
    - **I didn't do it:** "Not this time" instead of "Mission complete", a kind, no-guilt reaction in character (encourages a tiny first step next time), a gold "Back to Pep Talk" button and "Back to the squad". It doesn't count as a win and doesn't break the streak by itself; only a day with no wins does. The character's face stays the same as on the other screens. When this win reaches an unlock, show the unlock choice (see Characters).
 4. **Saved:** saved pep talks as cards (character, task, full text, play button), newest first, with filter chips ("All" plus each character that has saved pep talks). Playing a saved pep talk reads the stored text; it never calls the AI. Press and hold a card to remove it (with a confirmation).
 
@@ -94,7 +94,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 3. ✅ Pep talk screen UI with a hard-coded sample response.
 4. ✅ Serverless backend function and real AI pep talks.
 5. ✅ Voice playback with `expo-speech`.
-6. ✅ "I did it!" screen with the AI reaction (auto-play voice).
+6. ✅ "I did it!" screen with the AI reaction.
 7. ✅ Saving pep talks and the Saved tab.
 8. ✅ Recording wins and streaks (shown on the "I did it!" screen).
    - Remember reactions per pep talk: the first "I did it!" / "I didn't do it" reaction for a pep talk is kept, so going back and forth shows the same reaction instantly with no new AI request. A new pep talk (Again, Swap, new task) resets them.
@@ -168,9 +168,9 @@ Not in v1, but planned or worth considering:
 - Upstash added two reference guides for AI assistants in `.claude/skills/` (and `.agents/skills/`), tracked by `skills-lock.json`.
 - AI responses are capped at 2 to 4 sentences and about 60 words, so they're quick to hear aloud.
 - The Anthropic account uses prepaid credits with auto-reload off, so running out stops requests instead of charging more.
-- Voices: only one line plays at a time; the play button turns into a stop button while speaking. Speech stops when you ask for a new pep talk, swap, or leave the screen. Pep talks don't auto-play (you tap play); reactions will auto-play in step 6.
+- Voices: only one line plays at a time; the play button turns into a stop button while speaking. Speech stops when you ask for a new pep talk, swap, or leave the screen. Nothing auto-plays: pep talks and reactions only play when the user taps play.
 - All-caps lines (Sergeant Stone) are spoken in normal case, because text-to-speech reads some capitalized words as letters ("IT" as "I T"). The screen still shows them in caps.
-- Voices respect the iPhone's silent switch: when the phone is on silent, nothing plays (including auto-played reactions). This is intentional; don't add a "play in silent mode" override.
+- Voices respect the iPhone's silent switch: when the phone is on silent, nothing plays. This is intentional; don't add a "play in silent mode" override.
 - Each character has a ranked list of preferred built-in iPhone voices (accents like British Daniel or Irish Moira, novelty voices like Zarvox for Unit 7, and a French voice for Chef Antoine). The app uses the first one the phone has, preferring an Enhanced/Premium download of it, and falls back to the default voice. Which voices exist varies by iPhone and by what the user has downloaded in Settings > Accessibility > Spoken Content > Voices.
 - The pep talk screen keeps its big button above the on-screen keyboard, and the keyboard's "done" key asks for the first pep talk, so you don't have to dismiss the keyboard first.
 - Simulator testing quirk: the Simulator's automated typing is slow, so taps sent right after typing can land late. This isn't an app bug.
@@ -192,3 +192,5 @@ Not in v1, but planned or worth considering:
 - Dev-only buttons on the Squad screen: "re-roll my squad" and "add 20 pep talks (test unlocking)". Both only appear in development builds.
 - Final testing pass (2026-09-27) fixes: the per-device limit is now checked before the global one, so a device over its limit can't use up everyone's global allowance; reactions ("I did it!" / "I didn't do it") are capped at about 40 words so the streak and unlock tiles fit on screen; after unlocking, "Get a pep talk from X" starts from the Squad tab so back goes there; the reaction screen no longer spins forever if opened without a task.
 - Known limitation: the global daily cap can still be used up by someone who keeps changing their anonymous device id. That's the trade-off of no accounts; User accounts (Future features) would fix it.
+- Speech uses its own iOS audio session (`useApplicationAudioSession: false` in `src/lib/speak.ts`). With the app's session (the default), speech was completely silent on a real iPhone in Expo Go even with sound on; the Simulator didn't show the problem. Confirmed on a real iPhone: audible, per-character voices work, and silent mode still mutes it.
+- Reactions don't auto-play (changed after real-iPhone testing); they play only when the user taps play, same as pep talks.
