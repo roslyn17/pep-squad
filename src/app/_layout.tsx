@@ -53,6 +53,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="reaction" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+        <Stack.Screen name="unlock" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>
   );

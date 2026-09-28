@@ -11,6 +11,7 @@ import { SwapSheet } from '@/components/SwapSheet';
 import { Character, getCharacter } from '@/data/characters';
 import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { removeSavedPepTalk, savePepTalk, useSavedPepTalks } from '@/lib/saved';
+import { successFeedback, tapFeedback } from '@/lib/haptics';
 import { useSpeech } from '@/lib/speak';
 import { useSquad } from '@/lib/squad';
 import { countPepTalk } from '@/lib/unlocks';
@@ -73,6 +74,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
     if (!trimmedTask) return;
     const requestId = ++latestRequest.current;
     const taskForRequest = trimmedTask;
+    tapFeedback();
     Keyboard.dismiss();
     speech.stop();
     setLoading(true);
@@ -92,6 +94,8 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
   }
 
   function reportOutcome(outcome: Outcome) {
+    if (outcome === 'done') successFeedback();
+    else tapFeedback();
     speech.stop();
     router.push({
       pathname: '/reaction',
@@ -101,6 +105,7 @@ function PepTalk({ character, onSwap }: { character: Character; onSwap: (c: Char
 
   async function toggleSave() {
     if (result?.status !== 'ok') return;
+    tapFeedback();
     if (isSaved && savedId) {
       await removeSavedPepTalk(savedId);
       setSavedId(null);

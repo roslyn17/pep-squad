@@ -18,7 +18,7 @@ The tone is playful. The characters should be funny first and motivating second.
 
 ## Screens
 
-1. **Squad (home):** "Squad member of the day" card at the top, then a 2-column grid of the user's squad (the characters they have). Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
+1. **Squad (home):** an orange "New squad member unlocked!" banner when an unlock is ready, a dark "Squad member of the day" card (icon, name, and that character's short greeting; tap it to get a pep talk from them), then a 2-column grid of the user's squad in the order they joined. Bottom tab bar: Squad, Saved. The settings gear shown in the mockup is not in v1.
 2. **Pep talk:** character header (icon, with the name and the tagline stacked beside it), text input ("What do you need a pep talk for?"), speech bubble with the pep talk and a play button, buttons for Again, Save, Swap, and two big side-by-side buttons: "I did it!" (solid orange) and "I didn't do it" (outlined).
    - Swap opens a picker of the user's squad; choosing a character immediately generates a new pep talk for the same task.
    - Before the first pep talk, the big bottom button reads "Pep me up!" (enabled once a task is typed). After a pep talk arrives it's replaced by "I did it!" and "I didn't do it", and the pep talk plus Again / Save / Swap appear.
@@ -99,7 +99,7 @@ Build one step at a time. Each step should work in Expo Go in the iOS Simulator 
 8. ✅ Recording wins and streaks (shown on the "I did it!" screen).
    - Remember reactions per pep talk: the first "I did it!" / "I didn't do it" reaction for a pep talk is kept, so going back and forth shows the same reaction instantly with no new AI request. A new pep talk (Again, Swap, new task) resets them.
    - The same pep talk can only count as one win, no matter how many times "I did it!" is tapped.
-9. Nice-to-haves: squad member of the day, unlocking characters (choose 1 of 3, every 20 pep talks), haptics, notifications.
+9. ✅ Unlocking characters (choose 1 of 3, every 20 pep talks), squad member of the day, haptics. (Notifications moved to Future features.)
 
 ## Working rules
 
@@ -129,6 +129,7 @@ Not in v1, but planned or worth considering:
 - **Settings screen:** the gear shown in the mockup.
 - **Progress tab:** streak, wins this week (bar chart by day), top motivator, next unlock, and recent wins (page 5 of the mockup). Wins are already recorded in v1, so this is mostly a new screen.
 - **Drawn character faces:** replace the placeholder icons with simple drawn faces in the mockup's style.
+- **Notifications:** e.g. an optional daily reminder from a squad member at a time the user picks. Skipped for v1.
 - **AI voices (planned for a future version):** replace the built-in iPhone voices with an AI voice service (e.g. ElevenLabs or OpenAI text-to-speech) so characters sound genuinely excited, deadpan, or dramatic instead of monotone. Plan:
   - Generate audio in the backend (like the AI text), so the voice service's API key stays server-side, and give each character a matching AI voice.
   - Cache/store the audio for saved pep talks so replays never pay again.
@@ -184,3 +185,8 @@ Not in v1, but planned or worth considering:
 - Wins live in `src/lib/wins.ts` (stored on the phone). Each pep talk has a unique id; a win is recorded the first time "I did it!" is tapped for it, and repeats are ignored. Streak math: consecutive local days with a win; a streak through yesterday still shows until today ends. Unit-tested edge cases (month boundaries, gaps, same-day wins).
 - Reactions are remembered in memory for the app session (per pep talk and outcome), so revisiting shows the same reaction with no new AI request. Closing the app forgets them (wins stay). Failed reactions aren't remembered, so they can be retried.
 - The reaction screen uses a smaller character circle (88) so the streak/unlock tiles fit above the buttons without scrolling.
+- Unlock flow (`src/app/unlock.tsx`, logic in `src/lib/unlocks.ts`): unlocks earned = floor(counted pep talks / 20); the app stores how many were claimed. When one is ready, the Squad screen shows a banner and the "I did it!" tile turns gold ("Unlocked! Tap to choose"). The 3 offered characters are saved, so closing the screen or restarting the app shows the same 3; they're re-picked only if one somehow joined meanwhile. After choosing: "X joined your squad!" with "Get a pep talk from X" or "Back to the squad". When all 20 characters are in the squad, the tile says "Full squad!".
+- Squad member of the day is picked once per local day and remembered on the phone (it rotates to the next squad member each day), so it doesn't change mid-day when someone joins. Each character has a short `greeting` line for this card.
+- The squad is shared live across screens (`src/lib/squad.ts`), so a new member shows up everywhere right away.
+- Haptics (`src/lib/haptics.ts`, `expo-haptics`): a light tap on Pep me up / Again / Swap / Save / I didn't do it, and a success buzz on I did it! and when a character joins. Haptics don't run in the Simulator; check on a real iPhone.
+- Dev-only buttons on the Squad screen: "re-roll my squad" and "add 20 pep talks (test unlocking)". Both only appear in development builds.

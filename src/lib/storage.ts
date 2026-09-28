@@ -9,6 +9,15 @@ const KEYS = {
   saved: 'pepsquad:v1:saved', // array of SavedPepTalk, newest first
   wins: 'pepsquad:v1:wins', // array of Win, oldest first
   counted: 'pepsquad:v1:countedPepTalks', // array of CountedPepTalk, oldest first
+  unlocks: 'pepsquad:v1:unlocks', // UnlockState
+  featured: 'pepsquad:v1:featured', // { day, characterId }: today's squad member of the day
+};
+
+export type UnlockState = {
+  /** How many earned unlocks have been used to add a squad member. */
+  claimed: number;
+  /** The 3 characters currently offered, kept so closing the screen doesn't re-roll them. */
+  offer: string[] | null;
 };
 
 /** A pep talk that counts toward unlocking a new squad member. */
@@ -92,4 +101,22 @@ export async function loadCountedPepTalks(): Promise<CountedPepTalk[]> {
 
 export function writeCountedPepTalks(items: CountedPepTalk[]): Promise<void> {
   return writeJson(KEYS.counted, items);
+}
+
+export async function loadUnlockState(): Promise<UnlockState> {
+  return (await readJson<UnlockState>(KEYS.unlocks)) ?? { claimed: 0, offer: null };
+}
+
+export function writeUnlockState(state: UnlockState): Promise<void> {
+  return writeJson(KEYS.unlocks, state);
+}
+
+export type FeaturedPick = { day: string; characterId: string };
+
+export function loadFeaturedPick(): Promise<FeaturedPick | null> {
+  return readJson<FeaturedPick>(KEYS.featured);
+}
+
+export function writeFeaturedPick(pick: FeaturedPick): Promise<void> {
+  return writeJson(KEYS.featured, pick);
 }

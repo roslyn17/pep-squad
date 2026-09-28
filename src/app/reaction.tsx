@@ -7,10 +7,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import { PlayButton } from '@/components/PlayButton';
-import { getCharacter } from '@/data/characters';
+import { characters, getCharacter } from '@/data/characters';
 import { Outcome, PepTalkResult, requestPepTalk } from '@/lib/pepTalk';
 import { estimateDurationSeconds, speak, useSpeech } from '@/lib/speak';
-import { pepTalksUntilUnlock, useCountedPepTalks } from '@/lib/unlocks';
+import { useSquad } from '@/lib/squad';
+import { PEP_TALKS_PER_UNLOCK, useCountedPepTalks, useUnlockReady } from '@/lib/unlocks';
 import { currentStreak, recordWin, useWins } from '@/lib/wins';
 import { colors, fonts, minTouchSize, radius, spacing } from '@/theme';
 
@@ -52,6 +53,9 @@ export default function ReactionScreen() {
   const mounted = useRef(true);
   const wins = useWins();
   const pepTalkCount = useCountedPepTalks();
+  const unlockReady = useUnlockReady();
+  const { squad } = useSquad();
+  const squadFull = !!squad && squad.length >= characters.length;
   const cacheKey = `${pepTalkId}:${outcome}`;
 
   const fetchReaction = useCallback(async () => {
@@ -146,7 +150,12 @@ export default function ReactionScreen() {
         </View>
 
         {outcome === 'done' && wins && pepTalkCount !== null && (
-          <ProgressTiles pepTalkCount={pepTalkCount} streak={currentStreak(wins)} />
+          <ProgressTiles
+            pepTalkCount={pepTalkCount}
+            streak={currentStreak(wins)}
+            unlockReady={unlockReady}
+            squadFull={squadFull}
+          />
         )}
       </ScrollView>
 
@@ -167,8 +176,19 @@ export default function ReactionScreen() {
   );
 }
 
-function ProgressTiles({ pepTalkCount, streak }: { pepTalkCount: number; streak: number }) {
-  const away = pepTalksUntilUnlock(pepTalkCount);
+function ProgressTiles({
+  pepTalkCount,
+  streak,
+  unlockReady,
+  squadFull,
+}: {
+  pepTalkCount: number;
+  streak: number;
+  unlockReady: boolean;
+  squadFull: boolean;
+}) {
+  // An earned-but-unused unlock shows "Unlocked!"; otherwise count down to the next one.
+  const away = PEP_TALKS_PER_UNLOCK - (pepTalkCount % PEP_TALKS_PER_UNLOCK);
   return (
     <View style={styles.tiles}>
       <View style={styles.tile}>
@@ -177,21 +197,28 @@ function ProgressTiles({ pepTalkCount, streak }: { pepTalkCount: number; streak:
         </Text>
         <Text style={styles.tileLabel}>Current streak</Text>
       </View>
-      <View style={styles.tile}>
-        {away === 0 ? (
-          <>
-            <Text style={styles.tileValue}>Unlocked!</Text>
-            <Text style={styles.tileLabel}>You earned a new squad member</Text>
-          </>
-        ) : (
-          <>
-            <Text style={styles.tileValue}>{away} more</Text>
-            <Text style={styles.tileLabel}>
-              {away === 1 ? 'pep talk' : 'pep talks'} to unlock a new squad member
-            </Text>
-          </>
-        )}
-      </View>
+      {squadFull ? (
+        <View style={styles.tile}>
+          <Text style={styles.tileValue}>Full squad!</Text>
+          <Text style={styles.tileLabel}>You've unlocked every squad member</Text>
+        </View>
+      ) : unlockReady ? (
+        <Pressable
+          onPress={() => router.push('/unlock')}
+          style={({ pressed }) => [styles.tile, styles.tileAction, pressed && { opacity: 0.85 }]}
+          accessibilityRole="button"
+        >
+          <Text style={[styles.tileValue, { color: colors.dark }]}>Unlocked!</Text>
+          <Text style={[styles.tileLabel, { color: colors.dark }]}>Tap to choose a new squad member</Text>
+        </Pressable>
+      ) : (
+        <View style={styles.tile}>
+          <Text style={styles.tileValue}>{away} more</Text>
+          <Text style={styles.tileLabel}>
+            {away === 1 ? 'pep talk' : 'pep talks'} to unlock a new squad member
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -311,6 +338,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkRaised,
     borderRadius: radius.card,
     padding: 16,
+  },
+  tileAction: {
+    backgroundColor: colors.gold,
   },
   tileValue: {
     fontFamily: fonts.heading,

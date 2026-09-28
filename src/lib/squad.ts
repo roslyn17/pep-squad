@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Character, TONES, characters, getCharacter } from '@/data/characters';
-import { loadSquadIds, saveSquadIds } from '@/lib/storage';
+import { loadFeaturedPick, loadSquadIds, saveSquadIds, writeFeaturedPick } from '@/lib/storage';
+import { localDay } from '@/lib/wins';
 
 export const STARTING_SQUAD_SIZE = 5;
 
@@ -30,37 +31,86 @@ export function pickStartingSquad(pool: Character[] = characters): string[] {
   return shuffle(picked).map((c) => c.id);
 }
 
-/**
- * The user's squad, loaded from the phone. On first launch it assigns and saves a random
- * starting squad. `squad` is null while loading.
- */
+// The squad is shared by every screen: when someone joins (an unlock), all screens update.
+let squadIds: string[] | null = null;
+let loading: Promise<string[]> | null = null;
+const listeners = new Set<(ids: string[]) => void>();
+
+function publish(ids: string[]) {
+  squadIds = ids;
+  listeners.forEach((listener) => listener(ids));
+}
+
+/** Loads the squad from the phone, assigning a random starting squad on first launch. */
+export function loadSquad(): Promise<string[]> {
+  if (squadIds) return Promise.resolve(squadIds);
+  loading ??= (async () => {
+    const saved = await loadSquadIds();
+    const valid = saved ? idsToCharacters(saved).map((c) => c.id) : [];
+    const ids = valid.length > 0 ? valid : pickStartingSquad();
+    if (valid.length === 0) await saveSquadIds(ids);
+    publish(ids);
+    return ids;
+  })();
+  return loading;
+}
+
+/** Adds a character to the end of the squad (used by unlocks). */
+export async function addToSquad(characterId: string): Promise<void> {
+  const current = await loadSquad();
+  if (current.includes(characterId)) return;
+  const next = [...current, characterId];
+  publish(next);
+  await saveSquadIds(next);
+}
+
+/** Development only: replaces the squad with a new random starting squad. */
+async function rerollSquad(): Promise<void> {
+  const ids = pickStartingSquad();
+  publish(ids);
+  await saveSquadIds(ids);
+}
+
+/** The user's squad (in the order they joined). `squad` is null while loading. */
 export function useSquad() {
-  const [squad, setSquad] = useState<Character[] | null>(null);
-
-  const assignNewSquad = useCallback(async () => {
-    const ids = pickStartingSquad();
-    await saveSquadIds(ids);
-    setSquad(idsToCharacters(ids));
-  }, []);
-
+  const [ids, setIds] = useState<string[] | null>(squadIds);
   useEffect(() => {
+    listeners.add(setIds);
+    loadSquad().then(setIds);
+    return () => {
+      listeners.delete(setIds);
+    };
+  }, []);
+  const squad = useMemo(() => (ids ? idsToCharacters(ids) : null), [ids]);
+  return { squad, rerollSquad };
+}
+
+/**
+ * Today's featured squad member: picked once per day and remembered, so it stays the same all
+ * day even if someone joins the squad. Tomorrow it moves on to the next squad member.
+ */
+export function useMemberOfTheDay(squad: Character[] | null): Character | undefined {
+  const [pick, setPick] = useState<Character | undefined>(undefined);
+  useEffect(() => {
+    if (!squad || squad.length === 0) return;
     let cancelled = false;
     (async () => {
-      const saved = await loadSquadIds();
-      const valid = saved ? idsToCharacters(saved) : [];
-      if (cancelled) return;
-      if (valid.length > 0) {
-        setSquad(valid);
-      } else {
-        await assignNewSquad();
+      const today = localDay();
+      const saved = await loadFeaturedPick();
+      let chosen = saved?.day === today ? squad.find((c) => c.id === saved.characterId) : undefined;
+      if (!chosen) {
+        // Rotate: the member after yesterday's pick (or the first one).
+        const previous = saved ? squad.findIndex((c) => c.id === saved.characterId) : -1;
+        chosen = squad[(previous + 1) % squad.length];
+        await writeFeaturedPick({ day: today, characterId: chosen.id });
       }
+      if (!cancelled) setPick(chosen);
     })();
     return () => {
       cancelled = true;
     };
-  }, [assignNewSquad]);
-
-  return { squad, rerollSquad: assignNewSquad };
+  }, [squad]);
+  return pick;
 }
 
 // Drops ids that no longer exist in the character bank (e.g. a character was renamed).
