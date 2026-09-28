@@ -54,7 +54,11 @@ export default function UnlockScreen() {
           <Text style={styles.subtitle}>{joined.tagline}</Text>
           <View style={[styles.buttons, { paddingBottom: insets.bottom + 12 }]}>
             <Pressable
-              onPress={() => router.replace({ pathname: '/pep-talk/[id]', params: { id: joined.id } })}
+              onPress={() => {
+                // Start fresh from the Squad tab, so "back" from the new member's pep talk goes there.
+                router.dismissTo('/');
+                router.push({ pathname: '/pep-talk/[id]', params: { id: joined.id } });
+              }}
               style={({ pressed }) => [styles.gold, pressed && { opacity: 0.85 }]}
               accessibilityRole="button"
             >

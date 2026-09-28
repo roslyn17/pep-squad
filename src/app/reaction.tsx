@@ -59,7 +59,10 @@ export default function ReactionScreen() {
   const cacheKey = `${pepTalkId}:${outcome}`;
 
   const fetchReaction = useCallback(async () => {
-    if (!character || !task) return;
+    if (!character || !task) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const cached = pepTalkId ? reactionCache.get(cacheKey) : undefined;
     const next =
@@ -117,7 +120,7 @@ export default function ReactionScreen() {
         </Text>
 
         <View style={styles.avatar}>
-          <CharacterAvatar character={character} size={88} backgroundColor={character.cardColor} />
+          <CharacterAvatar character={character} size={72} backgroundColor={character.cardColor} />
         </View>
 
         <View style={styles.card} accessibilityLiveRegion="polite">
@@ -284,7 +287,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignItems: 'center',
-    marginVertical: 18,
+    marginVertical: 14,
   },
   card: {
     backgroundColor: colors.darkRaised,
